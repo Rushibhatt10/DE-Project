@@ -6,6 +6,9 @@ import Signin from "./pages/Signin";
 import Dashboard from "./pages/Dashboard";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import UserDashboard from "./pages/UserDashboard";
+import ProviderAdmin from "./pages/ProviderAdmin";
+import AddService from "./pages/AddService";
+import ServiceDetails from "./pages/ServiceDetails"; 
 
 function App() {
   return (
@@ -16,9 +19,19 @@ function App() {
       <Route path="/signin" element={<Signin />} />
       <Route path="/provider-dashboard" element={<ProviderDashboard />} />
       <Route path="/user-dashboard" element={<UserDashboard />} />
+      <Route path="/provider-admin" element={<ProviderAdmin />} />
+      <Route path="/add-service" element={<AddService />} />
+      <Route path="/service/:id" element={<ServiceDetails />} />
 
-      {/* Optional: fallback for unknown routes */}
-      <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+      {/* 404 fallback */}
+      <Route
+        path="*"
+        element={
+          <h1 className="text-center mt-20 text-2xl text-red-500">
+            404 - Page Not Found
+          </h1>
+        }
+      />
     </Routes>
   );
 }
