@@ -23,3 +23,4 @@ const db = getFirestore(app);
 enableNetwork(db).catch(console.error);
 
 export { auth, db, provider };
+export { app };

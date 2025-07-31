@@ -6,10 +6,14 @@ import {
   addDoc,
   collection,
   serverTimestamp,
+  getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { motion } from "framer-motion";
+import emailjs from "@emailjs/browser";
 import {
   ArrowLeft,
   MapPin,
@@ -20,7 +24,6 @@ import {
   BadgeCheck,
   CalendarCheck,
   Tag,
-  CreditCard,
 } from "lucide-react";
 
 const ServiceDetails = () => {
@@ -29,6 +32,7 @@ const ServiceDetails = () => {
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,6 +64,55 @@ const ServiceDetails = () => {
     return () => unsubscribe();
   }, [id, navigate]);
 
+  useEffect(() => {
+    const fetchFeedback = async () => {
+      if (userId && id) {
+        const q = query(
+          collection(db, "ratings"),
+          where("userId", "==", userId),
+          where("serviceId", "==", id)
+        );
+        const snapshot = await getDocs(q);
+        if (!snapshot.empty) {
+          const data = snapshot.docs[0].data();
+          setFeedback(data);
+        }
+      }
+    };
+    fetchFeedback();
+  }, [userId, id]);
+
+  const sendEmails = async () => {
+    try {
+      const templateParamsUser = {
+        to_email: userEmail,
+        service_name: service.name,
+      };
+
+      const templateParamsProvider = {
+        to_email: service.providerEmail,
+        user_email: userEmail,
+        service_name: service.name,
+      };
+
+      await emailjs.send(
+        "service_hsrbila",
+        "template_eiv8arm",
+        templateParamsUser,
+        "OURe-LROKrYp6YWb_"
+      );
+
+      await emailjs.send(
+        "service_hsrbila",
+        "template_eiv8arm",
+        templateParamsProvider,
+        "OURe-LROKrYp6YWb_"
+      );
+    } catch (err) {
+      console.error("EmailJS error:", err);
+    }
+  };
+
   const handleRequestService = async () => {
     if (!userEmail || !service) return;
 
@@ -74,7 +127,10 @@ const ServiceDetails = () => {
         status: "Pending",
         timestamp: serverTimestamp(),
       });
-      alert("Request sent to the provider successfully!");
+
+      await sendEmails();
+
+      alert("Request sent successfully! Confirmation email sent.");
     } catch (error) {
       console.error("Error sending request:", error);
       alert("Failed to send request. Please try again.");
@@ -104,13 +160,16 @@ const ServiceDetails = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
 
-        {service.imageUrl && (
-          <motion.img
-            src={service.imageUrl}
-            alt={service.name}
-            className="w-full h-72 object-cover rounded-2xl shadow-lg border border-gray-300 dark:border-gray-700 mb-6"
-            whileHover={{ scale: 1.01 }}
+        {service.imageUrls?.length > 0 ? (
+          <img
+            src={service.imageUrls[0]}
+            alt={service.name || "Service Image"}
+            className="w-full max-h-[400px] object-cover rounded-xl shadow mb-6"
           />
+        ) : (
+          <div className="w-full h-[200px] flex items-center justify-center bg-gray-100 text-gray-400 border border-dashed rounded-xl mb-6">
+            No image preview available
+          </div>
         )}
 
         <motion.h1
@@ -186,8 +245,16 @@ const ServiceDetails = () => {
           >
             Request Service
           </button>
-          
         </motion.div>
+
+        {/* ✅ Feedback Section */}
+        {feedback && (
+          <div className="mt-12 bg-white/10 backdrop-blur border border-white/20 rounded-xl p-6">
+            <h3 className="text-xl font-semibold text-yellow-400 mb-2">Feedbacks</h3>
+            <p className="text-white mb-1">⭐ {feedback.rating} / 5</p>
+            <p className="text-white/80 italic">“{feedback.feedback}”</p>
+          </div>
+        )}
       </motion.div>
     </div>
   );

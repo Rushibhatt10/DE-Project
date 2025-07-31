@@ -13,6 +13,7 @@ import UserDashboard from "./pages/UserDashboard";
 import ProviderAdmin from "./pages/ProviderAdmin";
 import AddService from "./pages/AddService";
 import ServiceDetails from "./pages/ServiceDetails";
+import AccountSection from "./pages/AccountSection";
 
 // 🔐 Admin Pages
 import MainAdminPanel from "./pages/MainAdminPanel";
@@ -21,6 +22,7 @@ import Verifications from "./pages/Verifications";
 // 🤝 Deal & Chat
 import DealConfirmationPage from "./pages/DealConfirmationPage";
 import ChatPage from "./pages/ChatPage"; 
+
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
       <Route path="/provider-admin" element={<ProviderAdmin />} />
       <Route path="/add-service" element={<AddService />} />
       <Route path="/service/:id" element={<ServiceDetails />} />
+      <Route path="/account" element={<AccountSection />} />
     
       {/* 🔐 Admin & Verification */}
       <Route path="/admin" element={<MainAdminPanel />} />

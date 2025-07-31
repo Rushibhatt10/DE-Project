@@ -89,16 +89,13 @@ const UserDashboard = () => {
     return matchSearch && matchLocation && matchCategory;
   })
   .sort((a, b) => {
-    if (sortOption === "price_low") return a.price - b.price;
-    if (sortOption === "price_high") return b.price - a.price;
-    if (sortOption === "rating_high") return b.rating - a.rating;
-    if (sortOption === "newest")
-      return (
-        b.createdAt?.toMillis?.() - a.createdAt?.toMillis?.()
-      );
-    return 0;
-  });
-
+  if (sortOption === "price_low") return parseFloat(a.price || 0) - parseFloat(b.price || 0);
+  if (sortOption === "price_high") return parseFloat(b.price || 0) - parseFloat(a.price || 0);
+  if (sortOption === "rating_high") return (b.rating || 0) - (a.rating || 0);
+  if (sortOption === "newest")
+    return (b.timestamp?.toMillis?.() || 0) - (a.timestamp?.toMillis?.() || 0);
+  return 0;
+});
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-[#1e1e2e] dark:to-[#121212] p-6 font-['Manrope'] transition-all">
@@ -191,13 +188,14 @@ const UserDashboard = () => {
                   whileHover={{ scale: 1.03 }}
                   className="bg-white dark:bg-[#1f1f2e] rounded-2xl shadow-xl border border-gray-200 dark:border-white/10 overflow-hidden flex flex-col transition-all hover:shadow-pink-500/30"
                 >
-                  {service.imageUrl && (
-                    <img
-                      src={service.imageUrl}
-                      alt={service.name}
-                      className="w-full h-48 object-cover"
-                    />
+                  {service.imageUrls?.length > 0 && (
+                 <img
+                 src={service.imageUrls[0]}
+                 alt={service.name}
+                 className="w-full h-48 object-cover"
+                 />
                   )}
+
                   <div className="p-5 flex flex-col h-full">
                     <h2 className="text-xl font-bold text-pink-500 mb-1">{service.name}</h2>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
