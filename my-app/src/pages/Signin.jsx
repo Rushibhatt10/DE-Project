@@ -1,4 +1,3 @@
-// src/pages/Signin.jsx
 import React, { useState } from "react";
 import { auth, db, provider } from "../firebase";
 import {
@@ -9,6 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Mail, Lock, Phone, ShieldCheck } from "lucide-react";
 
 function Signin() {
   const [email, setEmail] = useState("");
@@ -108,28 +108,36 @@ function Signin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#1e1e2e] px-4">
-      <div className="w-full max-w-md p-8 bg-white dark:bg-white/10 shadow-xl rounded-2xl space-y-6">
-        <h2 className="text-3xl font-extrabold text-center text-pink-500">Sign In</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-pink-50 to-blue-50 dark:from-[#1e1e2e] dark:via-[#1a1a1a] dark:to-[#121212] px-4">
+      <div className="w-full max-w-md p-8 backdrop-blur-xl bg-white/80 dark:bg-white/10 border border-white/30 dark:border-white/10 shadow-xl rounded-2xl space-y-6">
+        <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
+          Sign In to Your Account
+        </h2>
 
         {/* Email/Password Login */}
         <form onSubmit={handleEmailSignin} className="space-y-4">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-pink-500" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-pink-500" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -146,20 +154,28 @@ function Signin() {
         <button
           onClick={handleGoogleSignin}
           disabled={loading}
-          className="w-full py-3 border border-pink-400 text-pink-600 rounded-lg font-semibold hover:bg-pink-50 dark:hover:bg-pink-900 transition-all"
+          className="w-full flex items-center justify-center gap-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-white bg-white dark:bg-gray-900 hover:shadow-md transition-all"
         >
-          {loading ? "Please wait..." : "Sign In with Google"}
+          <img
+            src="https://banner2.cleanpng.com/20171216/dbb/av2e6z0my.webp"
+            alt="Google Logo"
+            className="w-5 h-5"
+          />
+          {loading ? "Please wait..." : "Sign in with Google"}
         </button>
 
         {/* Phone OTP Login */}
         <div className="space-y-4">
-          <input
-            type="tel"
-            placeholder="+91XXXXXXXXXX"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
+          <div className="relative">
+            <Phone className="absolute left-3 top-3 text-blue-500" />
+            <input
+              type="tel"
+              placeholder="+91"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
           {otpSent && (
             <input
@@ -167,7 +183,7 @@ function Signin() {
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           )}
 
@@ -197,7 +213,7 @@ function Signin() {
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-pink-500">
+          <a href="/signup" className="text-pink-500 underline hover:text-pink-600">
             Sign up
           </a>
         </p>

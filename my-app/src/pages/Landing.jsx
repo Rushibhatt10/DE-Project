@@ -1,177 +1,271 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import { motion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
+import { Link } from "react-scroll";
+import {
+  Hammer,
+  Brush,
+  Plug,
+  Fan,
+  Droplets,
+  Paintbrush2,
+  Mail,
+  ShieldCheck,
+  UserCheck,
+  Timer,
+} from "lucide-react";
+import DarkVeil from "../components/DarkVeil"; // Make sure path is correct
+
+const services = [
+  { title: "Electrician", icon: <Plug className="w-6 h-6 text-indigo-500" /> },
+  { title: "Plumber", icon: <Droplets className="w-6 h-6 text-blue-500" /> },
+  { title: "Cleaner", icon: <Brush className="w-6 h-6 text-green-500" /> },
+  { title: "Painter", icon: <Paintbrush2 className="w-6 h-6 text-yellow-500" /> },
+  { title: "Carpenter", icon: <Hammer className="w-6 h-6 text-orange-500" /> },
+  { title: "AC Mechanic", icon: <Fan className="w-6 h-6 text-teal-500" /> },
+];
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i = 1) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.15,
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  }),
+};
 
 const LandingPage = () => {
-  const [darkMode, setDarkMode] = useState(
-    localStorage.getItem("theme") === "dark"
-  );
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-[#2a2a40] dark:to-[#3a3a60] text-black dark:text-white font-['Manrope'] transition-colors duration-500 relative">
-      
-      {/* Top-right Controls */}
-      <div className="absolute top-4 right-4 z-50 flex items-center space-x-4">
-        <Link
-          to="/signin"
-          className="bg-gradient-to-r from-pink-500 to-blue-500 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:scale-105 hover:shadow-pink-500/50 transition"
-        >
-          Sign In
-        </Link>
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2 bg-gray-200 dark:bg-gray-800 rounded-full shadow-md"
-          aria-label="Toggle Dark Mode"
-        >
-          {darkMode ? (
-            <Sun className="w-5 h-5 text-yellow-400" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-700" />
-          )}
-        </button>
-      </div>
+    <div className="relative overflow-hidden font-Manrope text-gray-800 dark:text-white scroll-smooth">
+      {/* 🌌 Animated Background */}
+      <DarkVeil
+        hueShift={10}
+        noiseIntensity={0.05}
+        scanlineIntensity={0.2}
+        speed={0.3}
+        scanlineFrequency={25}
+        warpAmount={0.05}
+        resolutionScale={1}
+      />
 
-      {/* Hero Section */}
-      <section className="relative h-screen flex flex-col justify-center items-center text-center px-6 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.06),transparent)] z-10" />
-        <div className="absolute top-[-5rem] right-[-5rem] w-96 h-96 bg-pink-500 rounded-full blur-3xl opacity-30 animate-pulse z-0" />
-        <div className="absolute bottom-[-5rem] left-[-5rem] w-96 h-96 bg-blue-500 rounded-full blur-3xl opacity-30 animate-pulse z-0" />
+      {/* Overlay tint for readability */}
+      <div className="absolute inset-0 bg-black/20 z-[1]" />
 
-        <motion.h1
-          initial={{ opacity: 0, y: -40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="text-6xl md:text-7xl font-extrabold leading-tight z-20 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-400"
-        >
-          Household & Tiffin Services
-        </motion.h1>
+      {/* Page content */}
+      <div className="relative z-10 bg-gradient-to-br from-white to-pink-50 dark:from-[#1e1e2e] dark:to-[#121212] min-h-screen">
 
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.3 }}
-          className="max-w-xl mt-6 text-lg text-gray-700 dark:text-gray-300 z-20"
-        >
-          Experience luxury, hygiene, and convenience with our exclusive services — delivered with style.
-        </motion.p>
+        {/* Navbar */}
+        <header className="bg-white/80 backdrop-blur-md dark:bg-[#1e1e2ecc] shadow px-6 py-4 flex justify-between items-center fixed w-full z-50">
+          <h1 className="text-xl font-bold text-pink-600">DE Project</h1>
+          <nav className="space-x-6 text-sm">
+            <Link to="about" smooth={true} duration={600} className="cursor-pointer hover:text-pink-500">
+              About
+            </Link>
+            <Link to="features" smooth={true} duration={600} className="cursor-pointer hover:text-pink-500">
+              Features
+            </Link>
+            <Link to="contact" smooth={true} duration={600} className="cursor-pointer hover:text-pink-500">
+              Contact
+            </Link>
+          </nav>
+        </header>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.5 }}
-          className="mt-10 z-20"
-        >
-          <Link
-            to="/signup"
-            className="bg-gradient-to-r from-pink-500 to-blue-500 text-white font-semibold px-8 py-3 rounded-full shadow-lg hover:scale-105 hover:shadow-pink-500/50 transition-all duration-300"
+        {/* Hero Section */}
+        <section className="min-h-screen flex flex-col items-center justify-center text-center pt-24 px-4">
+          <motion.h2
+            className="text-5xl font-extrabold text-pink-600"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
           >
-            Get Started
-          </Link>
-        </motion.div>
-      </section>
-
-      {/* About Us Section */}
-      <section className="px-6 py-20 bg-white dark:bg-[#1f1f2e] text-center">
-        <h2 className="text-4xl font-bold text-pink-500 mb-4">About Us</h2>
-        <p className="max-w-3xl mx-auto text-gray-700 dark:text-gray-300 mb-10 text-lg">
-          At DEServices, we are dedicated to making everyday living easier by connecting users with top-quality household and tiffin service providers in their area. Whether you're looking for a home-cooked meal, a reliable cleaner, or a skilled handyman — we've got you covered with trust, transparency, and technology.
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {[
-            {
-              title: "Trusted Providers",
-              desc: "All our service providers go through verification to ensure quality and safety for our users.",
-            },
-            {
-              title: "Location Based Services",
-              desc: "Our smart location feature matches you with the most relevant nearby service providers automatically.",
-            },
-            {
-              title: "Fast & Simple",
-              desc: "From signup to booking, our platform is optimized to give you the smoothest user experience possible.",
-            },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.2 }}
-              className="p-6 bg-gray-100 dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl transition"
+            On-Demand Household & Tiffin Services
+          </motion.h2>
+          <motion.p
+            className="mt-4 text-gray-600 dark:text-gray-300 max-w-xl"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            custom={2}
+          >
+            Book skilled professionals instantly. Plumbing, electrical, and tiffin services in just a few clicks.
+          </motion.p>
+          <motion.div
+            className="mt-6"
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            custom={3}
+          >
+            <a
+              href="/signup"
+              className="bg-pink-500 text-white px-6 py-3 rounded-lg shadow hover:bg-pink-600 transition"
             >
-              <h3 className="text-xl font-semibold mb-2 text-pink-500">
-                {item.title}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+              Get Started
+            </a>
+          </motion.div>
+        </section>
 
-      {/* Contact Section */}
-      <section
-        id="contact"
-        className="px-6 py-24 bg-gray-50 dark:bg-[#2a2a40] relative z-10"
-      >
-        <h2 className="text-4xl font-bold text-center mb-8">Contact Us</h2>
-        <p className="max-w-xl mx-auto text-center text-gray-700 dark:text-gray-300 mb-8">
-          Reach out to us anytime! We're here to help you with your household and tiffin service needs.
-        </p>
-
-        <form
-          action="https://getform.io/f/bkknqryb"
-          method="POST"
-          className="max-w-xl mx-auto space-y-6"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Your Name"
-            required
-            className="w-full p-3 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Your Email"
-            required
-            className="w-full p-3 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          />
-          <textarea
-            name="message"
-            placeholder="Your Message"
-            required
-            rows={5}
-            className="w-full p-3 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-          />
-          <button
-            type="submit"
-            className="w-full py-3 bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded transition"
+        {/* About Section */}
+        <section id="about" className="min-h-screen flex flex-col justify-center px-6 text-center">
+          <motion.h3
+            className="text-4xl font-bold text-pink-500 mb-4"
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
           >
-            Send Message
-          </button>
-        </form>
-      </section>
+            About Us
+          </motion.h3>
+          <motion.p
+            className="text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8"
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={2}
+          >
+            We bridge the gap between users and skilled professionals for reliable household and food services.
+            Our platform simplifies bookings, ensures verified providers, and delivers fast solutions.
+          </motion.p>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 dark:bg-[#1c1c2c] py-10 text-center text-gray-500 dark:text-gray-400 text-sm">
-        <p>
-          © 2025 DEServices. All rights reserved. Made with ❤️ by Rushi
-        </p>
-      </footer>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {[ShieldCheck, UserCheck, Timer].map((Icon, idx) => (
+              <motion.div
+                key={idx}
+                className="bg-white/80 dark:bg-gray-800 p-6 rounded-xl shadow-md text-center"
+                variants={fadeInUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                custom={idx + 1}
+              >
+                <Icon className="w-10 h-10 mx-auto text-pink-500 mb-2" />
+                <h4 className="text-lg font-semibold mb-1">
+                  {idx === 0 ? "Secure & Verified" : idx === 1 ? "User Friendly" : "Quick Response"}
+                </h4>
+                <p className="text-gray-600 dark:text-gray-400 text-sm">
+                  {idx === 0
+                    ? "All service providers undergo strict verification and ID checks."
+                    : idx === 1
+                    ? "Easy-to-use dashboard for users and providers with real-time tracking."
+                    : "Instant confirmations and fast service delivery at your doorstep."}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="features" className="min-h-screen flex flex-col justify-center px-6">
+          <div className="max-w-6xl mx-auto text-center">
+            <motion.h3
+              className="text-4xl font-extrabold text-pink-500 mb-4"
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              What’s waiting for you on the website?
+            </motion.h3>
+            <motion.p
+              className="text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-12"
+              variants={fadeInUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={2}
+            >
+              Our website offers a variety of household services to cater to your every need.
+            </motion.p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-6 mt-6">
+              {services.map((service, idx) => (
+                <motion.div
+                  key={idx}
+                  className="bg-white/80 dark:bg-gray-800 p-4 rounded-xl shadow-md hover:shadow-lg transition hover:scale-105"
+                  variants={fadeInUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  custom={idx + 1}
+                >
+                  <div className="flex justify-center mb-2">{service.icon}</div>
+                  <p className="text-sm font-semibold">{service.title}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="min-h-screen flex items-center justify-center flex-col px-6 text-center">
+          <motion.h3
+            className="text-4xl font-bold text-pink-500 mb-4"
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            Contact Us
+          </motion.h3>
+          <motion.p
+            className="text-gray-700 dark:text-gray-300 max-w-xl mb-6"
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={2}
+          >
+            Got questions or suggestions? Let’s talk.
+          </motion.p>
+          <motion.form
+            action="https://getform.io/f/bkknqryb"
+            method="POST"
+            className="w-full max-w-xl bg-white/80 dark:bg-gray-800 p-6 rounded-xl shadow space-y-4"
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={3}
+          >
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-gray-900"
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              required
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-gray-900"
+            />
+            <textarea
+              name="message"
+              placeholder="Your Message"
+              required
+              rows="4"
+              className="w-full p-3 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-gray-900"
+            />
+            <button
+              type="submit"
+              className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg shadow flex items-center justify-center mx-auto"
+            >
+              <Mail className="inline w-5 h-5 mr-1" /> Send Message
+            </button>
+          </motion.form>
+        </section>
+
+        {/* Footer */}
+        <footer className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+          &copy; {new Date().getFullYear()} DEProject. All rights reserved. Made with ❤️ by Rushi
+        </footer>
+      </div>
     </div>
   );
 };

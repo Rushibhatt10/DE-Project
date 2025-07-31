@@ -1,3 +1,4 @@
+// src/pages/Signup.jsx
 import React, { useState } from "react";
 import { auth, db, provider } from "../firebase";
 import {
@@ -8,6 +9,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { Mail, Lock, Phone, ShieldCheck } from "lucide-react";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -17,8 +19,8 @@ function Signup() {
   const [otp, setOtp] = useState("");
   const [role, setRole] = useState("user");
   const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [confirmationResult, setConfirmationResult] = useState(null);
 
@@ -31,15 +33,15 @@ function Signup() {
     setSuccessMsg("");
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", userCredential.user.uid), {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await setDoc(doc(db, "users", result.user.uid), {
         name,
         email,
         role,
         method: "email",
       });
 
-      setSuccessMsg("🎉 Signup successful! Redirecting you shortly...");
+      setSuccessMsg("Signup successful!");
       setTimeout(() => {
         role === "provider" ? navigate("/provider-dashboard") : navigate("/user-dashboard");
       }, 2000);
@@ -53,20 +55,17 @@ function Signup() {
   const handleGoogleSignup = async () => {
     setLoading(true);
     setErrorMsg("");
-    setSuccessMsg("");
 
     try {
       const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        name: user.displayName || name,
-        email: user.email,
+      await setDoc(doc(db, "users", result.user.uid), {
+        name: result.user.displayName || name,
+        email: result.user.email,
         role,
         method: "google",
       });
 
-      setSuccessMsg("🎉 Google signup successful! Redirecting...");
+      setSuccessMsg("Google signup successful!");
       setTimeout(() => {
         role === "provider" ? navigate("/provider-dashboard") : navigate("/user-dashboard");
       }, 2000);
@@ -79,16 +78,13 @@ function Signup() {
 
   const setupRecaptcha = () => {
     if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container", {
-        size: "invisible",
-      }, auth);
+      window.recaptchaVerifier = new RecaptchaVerifier("recaptcha-container", { size: "invisible" }, auth);
     }
   };
 
   const handleSendOtp = async () => {
     setLoading(true);
     setErrorMsg("");
-    setSuccessMsg("");
 
     try {
       setupRecaptcha();
@@ -96,7 +92,6 @@ function Signup() {
       const confirmation = await signInWithPhoneNumber(auth, phone, appVerifier);
       setConfirmationResult(confirmation);
       setOtpSent(true);
-      setSuccessMsg("📲 OTP sent!");
     } catch (error) {
       setErrorMsg(error.message);
     } finally {
@@ -107,40 +102,44 @@ function Signup() {
   const handleVerifyOtp = async () => {
     setLoading(true);
     setErrorMsg("");
-    setSuccessMsg("");
 
     try {
       const result = await confirmationResult.confirm(otp);
-      const user = result.user;
-
-      await setDoc(doc(db, "users", user.uid), {
+      await setDoc(doc(db, "users", result.user.uid), {
         name,
         phone,
         role,
         method: "phone",
       });
 
-      setSuccessMsg("✅ Phone verified! Redirecting...");
+      setSuccessMsg("Phone verified!");
       setTimeout(() => {
         role === "provider" ? navigate("/provider-dashboard") : navigate("/user-dashboard");
       }, 2000);
     } catch (error) {
-      setErrorMsg("❌ Invalid OTP");
+      setErrorMsg("Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#1e1e2e] px-4">
-      <div className="w-full max-w-md p-8 bg-white dark:bg-white/10 shadow-xl rounded-2xl space-y-6">
-        <h2 className="text-3xl font-extrabold text-center text-pink-500">Sign Up</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-pink-50 to-blue-50 dark:from-[#1e1e2e] dark:via-[#1a1a1a] dark:to-[#121212] px-4">
+      <div className="w-full max-w-md p-8 backdrop-blur-xl bg-white/80 dark:bg-white/10 border border-white/30 dark:border-white/10 shadow-xl rounded-2xl space-y-6">
+        <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
+          Create Your Account
+        </h2>
 
+        {/* Role Heading */}
+        <h3 className="text-center text-gray-700 dark:text-gray-300 font-semibold">
+          Select your role
+        </h3>
+
+        {/* Role Toggle */}
         <div className="relative bg-gray-200 dark:bg-gray-700 rounded-full flex p-1 select-none max-w-xs mx-auto">
           <button
             type="button"
             onClick={() => setRole("user")}
-            disabled={loading}
             className={`flex-1 py-2 rounded-full text-center font-semibold transition-all duration-300 ${
               role === "user"
                 ? "bg-gradient-to-r from-blue-500 to-pink-500 text-white shadow-lg scale-105"
@@ -152,7 +151,6 @@ function Signup() {
           <button
             type="button"
             onClick={() => setRole("provider")}
-            disabled={loading}
             className={`flex-1 py-2 rounded-full text-center font-semibold transition-all duration-300 ${
               role === "provider"
                 ? "bg-gradient-to-r from-pink-500 to-blue-500 text-white shadow-lg scale-105"
@@ -163,31 +161,41 @@ function Signup() {
           </button>
         </div>
 
+        {/* Email Signup */}
         <form onSubmit={handleEmailSignup} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
+          <div className="relative">
+            <ShieldCheck className="absolute left-3 top-3 text-blue-500" />
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="relative">
+            <Mail className="absolute left-3 top-3 text-pink-500" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
+          <div className="relative">
+            <Lock className="absolute left-3 top-3 text-pink-500" />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+            />
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -197,8 +205,10 @@ function Signup() {
           </button>
         </form>
 
+        {/* Divider */}
         <div className="text-center text-gray-500 dark:text-gray-300">or</div>
 
+        {/* Google Signup */}
         <button
           onClick={handleGoogleSignup}
           disabled={loading}
@@ -212,14 +222,18 @@ function Signup() {
           {loading ? "Please wait..." : "Sign up with Google"}
         </button>
 
+        {/* Phone/OTP Signup */}
         <div className="space-y-4">
-          <input
-            type="tel"
-            placeholder="+91XXXXXXXXXX"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
-          />
+          <div className="relative">
+            <Phone className="absolute left-3 top-3 text-blue-500" />
+            <input
+              type="tel"
+              placeholder="+91"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
           {otpSent && (
             <input
@@ -227,7 +241,7 @@ function Signup() {
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-3 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           )}
 
@@ -252,12 +266,13 @@ function Signup() {
 
         <div id="recaptcha-container"></div>
 
+        {/* Error/Success Message */}
         {successMsg && <p className="mt-4 text-green-600 font-semibold text-center">{successMsg}</p>}
         {errorMsg && <p className="mt-4 text-red-600 font-semibold text-center">{errorMsg}</p>}
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
           Already have an account?{" "}
-          <a href="/signin" className="text-pink-500">
+          <a href="/signin" className="text-pink-500 underline hover:text-pink-600">
             Sign in
           </a>
         </p>

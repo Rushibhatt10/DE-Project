@@ -1,7 +1,12 @@
-// src/pages/ServiceDetails.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { doc, getDoc, addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { motion } from "framer-motion";
@@ -23,6 +28,7 @@ const ServiceDetails = () => {
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userEmail, setUserEmail] = useState(null);
+  const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,7 +50,10 @@ const ServiceDetails = () => {
     };
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) setUserEmail(user.email);
+      if (user) {
+        setUserEmail(user.email);
+        setUserId(user.uid);
+      }
     });
 
     fetchService();
@@ -53,13 +62,16 @@ const ServiceDetails = () => {
 
   const handleRequestService = async () => {
     if (!userEmail || !service) return;
+
     try {
-      await addDoc(collection(db, "service_requests"), {
+      await addDoc(collection(db, "user_requests"), {
         serviceId: service.id,
         serviceName: service.name,
+        providerUid: service.providerUid || "",
         providerEmail: service.providerEmail,
+        userId: userId,
         userEmail: userEmail,
-        status: "pending",
+        status: "Pending",
         timestamp: serverTimestamp(),
       });
       alert("Request sent to the provider successfully!");
@@ -85,7 +97,6 @@ const ServiceDetails = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center gap-2 text-pink-500 hover:underline"
@@ -93,7 +104,6 @@ const ServiceDetails = () => {
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
 
-        {/* Image */}
         {service.imageUrl && (
           <motion.img
             src={service.imageUrl}
@@ -103,7 +113,6 @@ const ServiceDetails = () => {
           />
         )}
 
-        {/* Title & Description */}
         <motion.h1
           className="text-4xl font-extrabold text-pink-500 mb-4"
           initial={{ opacity: 0, y: -20 }}
@@ -121,7 +130,6 @@ const ServiceDetails = () => {
           {service.description}
         </motion.p>
 
-        {/* Info Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
@@ -166,7 +174,6 @@ const ServiceDetails = () => {
           </div>
         </div>
 
-        {/* Call to Action + Payment */}
         <motion.div
           className="mt-16 flex flex-col sm:flex-row sm:justify-center gap-6 text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -179,13 +186,7 @@ const ServiceDetails = () => {
           >
             Request Service
           </button>
-
-          <button
-            onClick={() => alert("Proceeding to payment (integrate Stripe/Razorpay here)")}
-            className="px-8 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-indigo-600 transition flex items-center gap-2"
-          >
-            <CreditCard className="w-5 h-5" /> Pay ₹{service.price}
-          </button>
+          
         </motion.div>
       </motion.div>
     </div>

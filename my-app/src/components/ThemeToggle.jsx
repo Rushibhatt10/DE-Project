@@ -1,14 +1,45 @@
-import { useTheme } from "../context/ThemeContext";
+// src/components/ThemeToggle.jsx
+import React, { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 
 const ThemeToggle = () => {
-  const { darkMode, setDarkMode } = useTheme();
+  const [theme, setTheme] = useState("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", prefersDark);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (theme === "light") {
+      setTheme("dark");
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      setTheme("light");
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  };
 
   return (
     <button
-      onClick={() => setDarkMode(!darkMode)}
-      className="fixed top-5 right-5 z-50 p-2 rounded-full bg-white dark:bg-gray-800 text-black dark:text-white shadow-md"
+      onClick={toggleTheme}
+      aria-label="Toggle dark mode"
+      className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-pink-500"
     >
-      {darkMode ? "🌞" : "🌙"}
+      {theme === "dark" ? (
+        <Sun className="w-5 h-5 text-yellow-400" />
+      ) : (
+        <Moon className="w-5 h-5 text-gray-600" />
+      )}
     </button>
   );
 };
