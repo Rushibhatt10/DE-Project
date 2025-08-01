@@ -23,14 +23,12 @@ const ProviderDashboard = () => {
     govIdType: "Aadhaar",
   });
 
-  // Auth + check if already verified
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setProvider(user);
         const docSnap = await getDoc(doc(db, "verified_providers", user.uid));
         if (docSnap.exists()) {
-          // ✅ Already verified → redirect to ProviderAdmin
           navigate("/provider-admin");
         } else {
           setIsVerified(false);
@@ -88,84 +86,86 @@ const ProviderDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#1e1e2e] px-6 py-10 text-black dark:text-white font-['Manrope']">
-      <div className="max-w-3xl mx-auto">
-        <motion.h1
-          className="text-3xl font-bold mb-6 text-center text-pink-500"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          Provider Dashboard
-        </motion.h1>
-
-        {!provider ? (
-          <p className="text-center">Please sign in to access the dashboard.</p>
-        ) : !isVerified ? (
-          <motion.form
-            onSubmit={handleVerify}
-            className="space-y-4 bg-white dark:bg-white/5 p-6 rounded-xl shadow-md border border-gray-300 dark:border-white/10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+    <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
+      <div className="min-h-screen px-6 py-10 text-black dark:text-white font-['Manrope']">
+        <div className="max-w-3xl mx-auto">
+          <motion.h1
+            className="text-3xl font-bold mb-6 text-center text-teal-800"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-xl font-semibold mb-2">Identity Verification</h2>
+            Provider Dashboard
+          </motion.h1>
 
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={providerInfo.fullName}
-              onChange={(e) => setProviderInfo({ ...providerInfo, fullName: e.target.value })}
-              required
-              className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
-            />
-
-            <input
-              type="tel"
-              placeholder="Phone Number"
-              value={providerInfo.phone}
-              onChange={(e) => setProviderInfo({ ...providerInfo, phone: e.target.value })}
-              required
-              className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
-            />
-
-            <input
-              type="text"
-              placeholder="Service Type"
-              value={providerInfo.serviceType}
-              onChange={(e) => setProviderInfo({ ...providerInfo, serviceType: e.target.value })}
-              required
-              className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
-            />
-
-            <select
-              value={providerInfo.govIdType}
-              onChange={(e) => setProviderInfo({ ...providerInfo, govIdType: e.target.value })}
-              className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+          {!provider ? (
+            <p className="text-center">Please sign in to access the dashboard.</p>
+          ) : !isVerified ? (
+            <motion.form
+              onSubmit={handleVerify}
+              className="space-y-4 bg-white dark:bg-white/5 p-6 rounded-xl shadow-md border border-gray-300 dark:border-white/10"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
             >
-              <option value="Aadhaar">Aadhaar</option>
-              <option value="PAN">PAN</option>
-              <option value="Driving License">Driving License</option>
-              <option value="Passport">Passport</option>
-            </select>
+              <h2 className="text-xl font-semibold mb-2">Identity Verification</h2>
 
-            <div className="flex flex-col">
-              <label className="mb-2">Upload ID Image</label>
               <input
-                type="file"
-                accept="image/*,.pdf"
-                onChange={(e) => setIdImage(e.target.files[0])}
+                type="text"
+                placeholder="Full Name"
+                value={providerInfo.fullName}
+                onChange={(e) => setProviderInfo({ ...providerInfo, fullName: e.target.value })}
                 required
-                className="w-full p-2 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+                className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
               />
-            </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform"
-            >
-              Submit Verification
-            </button>
-          </motion.form>
-        ) : null}
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                value={providerInfo.phone}
+                onChange={(e) => setProviderInfo({ ...providerInfo, phone: e.target.value })}
+                required
+                className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+              />
+
+              <input
+                type="text"
+                placeholder="Service Type"
+                value={providerInfo.serviceType}
+                onChange={(e) => setProviderInfo({ ...providerInfo, serviceType: e.target.value })}
+                required
+                className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+              />
+
+              <select
+                value={providerInfo.govIdType}
+                onChange={(e) => setProviderInfo({ ...providerInfo, govIdType: e.target.value })}
+                className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+              >
+                <option value="Aadhaar">Aadhaar</option>
+                <option value="PAN">PAN</option>
+                <option value="Driving License">Driving License</option>
+                <option value="Passport">Passport</option>
+              </select>
+
+              <div className="flex flex-col">
+                <label className="mb-2">Upload ID Image</label>
+                <input
+                  type="file"
+                  accept="image/*,.pdf"
+                  onChange={(e) => setIdImage(e.target.files[0])}
+                  required
+                  className="w-full p-2 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="flex items-center gap-2 bg-teal-800 text-white px-4 py-2 rounded-lg shadow hover:bg-teal-600 transition text-sm font-medium"
+              >
+                Submit Verification
+              </button>
+            </motion.form>
+          ) : null}
+        </div>
       </div>
     </div>
   );

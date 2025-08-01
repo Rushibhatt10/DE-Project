@@ -8,7 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, Phone, ShieldCheck } from "lucide-react";
+import { Mail, Lock, Phone } from "lucide-react";
 
 function Signin() {
   const [email, setEmail] = useState("");
@@ -108,53 +108,50 @@ function Signin() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-pink-50 to-blue-50 dark:from-[#1e1e2e] dark:via-[#1a1a1a] dark:to-[#121212] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-teal-50 to-blue-50 dark:from-[#1e1e2e] dark:via-[#1a1a1a] dark:to-[#121212] px-4">
       <div className="w-full max-w-md p-8 backdrop-blur-xl bg-white/80 dark:bg-white/10 border border-white/30 dark:border-white/10 shadow-xl rounded-2xl space-y-6">
-        <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
+        <h2 className="text-3xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-teal-900">
           Sign In to Your Account
         </h2>
 
-        {/* Email/Password Login */}
         <form onSubmit={handleEmailSignin} className="space-y-4">
           <div className="relative">
-            <Mail className="absolute left-3 top-3 text-pink-500" />
+            <Mail className="absolute left-3 top-3 text-teal-800" />
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
           <div className="relative">
-            <Lock className="absolute left-3 top-3 text-pink-500" />
+            <Lock className="absolute left-3 top-3 text-teal-800" />
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform disabled:opacity-50"
+            className="w-full py-3 bg-teal-800 hover:bg-teal-500 text-white font-semibold rounded-lg transition-transform hover:scale-105 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In with Email"}
           </button>
         </form>
 
-        {/* Divider */}
-        <div className="text-center text-gray-500 dark:text-gray-300">or</div>
+        <div className="text-center text-white/60">or</div>
 
-        {/* Google Signin */}
         <button
           onClick={handleGoogleSignin}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg font-medium text-gray-700 dark:text-white bg-white dark:bg-gray-900 hover:shadow-md transition-all"
+          className="w-full flex items-center justify-center gap-3 py-3 border border-white/20 rounded-lg font-medium text-white bg-white/5 hover:bg-white/10 transition-all"
         >
           <img
             src="https://banner2.cleanpng.com/20171216/dbb/av2e6z0my.webp"
@@ -164,16 +161,15 @@ function Signin() {
           {loading ? "Please wait..." : "Sign in with Google"}
         </button>
 
-        {/* Phone OTP Login */}
         <div className="space-y-4">
           <div className="relative">
-            <Phone className="absolute left-3 top-3 text-blue-500" />
+            <Phone className="absolute left-3 top-3 text-teal-800" />
             <input
               type="tel"
               placeholder="+91"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full pl-10 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
@@ -183,7 +179,7 @@ function Signin() {
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 rounded-lg border border-white/20 bg-white/5 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           )}
 
@@ -191,7 +187,7 @@ function Signin() {
             <button
               onClick={handleSendOtp}
               disabled={loading}
-              className="w-full py-3 border border-blue-400 text-blue-600 rounded-lg font-semibold hover:bg-blue-50 dark:hover:bg-blue-900 transition-all"
+              className="w-full py-3 border border-teal-800 text-teal-500 rounded-lg font-semibold hover:bg-white/10 transition-all"
             >
               Send OTP
             </button>
@@ -199,7 +195,7 @@ function Signin() {
             <button
               onClick={handleVerifyOtp}
               disabled={loading}
-              className="w-full py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-all"
+              className="w-full py-3 bg-teal-800 text-white rounded-lg font-semibold hover:bg-teal-600 transition-all"
             >
               Verify OTP
             </button>
@@ -208,12 +204,16 @@ function Signin() {
 
         <div id="recaptcha-container"></div>
 
-        {/* Error Message */}
-        {errorMsg && <p className="mt-4 text-red-600 font-semibold text-center">{errorMsg}</p>}
+        {errorMsg && (
+          <p className="mt-4 text-red-400 font-semibold text-center">{errorMsg}</p>
+        )}
 
-        <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-4">
+        <p className="text-center text-sm text-white/70 mt-4">
           Don’t have an account?{" "}
-          <a href="/signup" className="text-pink-500 underline hover:text-pink-600">
+          <a
+            href="/signup"
+            className="text-teal-800 underline hover:text-teal-500"
+          >
             Sign up
           </a>
         </p>

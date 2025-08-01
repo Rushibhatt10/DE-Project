@@ -1,5 +1,3 @@
-// src/pages/AccountSection.jsx
-
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 import {
@@ -107,9 +105,9 @@ const AccountSection = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-[#1e1e2e] dark:to-[#121212] p-6 font-['Manrope']">
+    <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
       <motion.h2
-        className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-600 bg-clip-text text-transparent mb-8"
+        className="text-3xl font-bold bg-gradient-to-r from-teal-300 via-cyan-400 to-teal-600 bg-clip-text text-transparent mb-8"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -119,7 +117,7 @@ const AccountSection = () => {
 
       {requests.length === 0 ? (
         <motion.div
-          className="text-center text-gray-500 dark:text-gray-300"
+          className="text-center text-white/60"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
@@ -135,11 +133,11 @@ const AccountSection = () => {
               animate={{ opacity: 1, y: 0 }}
             >
               <div className="flex flex-col gap-1">
-                <h3 className="text-xl font-semibold">{req.serviceName}</h3>
-                <p className="text-sm text-white/70">Provider: {req.providerName}</p>
+                <h3 className="text-xl font-semibold text-teal-300">{req.serviceName}</h3>
+                <p className="text-sm text-white/80">Provider: <span className="text-cyan-400">{req.providerName}</span></p>
                 <p className="text-sm text-white/60">
                   Status:{" "}
-                  <span className="font-medium capitalize text-pink-300">
+                  <span className="font-medium capitalize text-cyan-300">
                     {req.status}
                   </span>
                 </p>
@@ -173,17 +171,17 @@ const AccountSection = () => {
                   />
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-pink-500 hover:bg-pink-600 rounded text-sm"
+                    className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 rounded text-sm text-white font-medium"
                   >
                     ✍️ Submit
                   </button>
                 </form>
               ) : feedbacks[req.id] ? (
                 <div className="mt-4 text-white/90">
-                  <p className="text-sm">
+                  <p className="text-sm text-teal-300">
                     ⭐ Rating: <strong>{feedbacks[req.id].rating} / 5</strong>
                   </p>
-                  <p className="text-sm mt-1">
+                  <p className="text-sm mt-1 text-white/80">
                     💬 Feedback: <em>"{feedbacks[req.id].feedback}"</em>
                   </p>
                 </div>

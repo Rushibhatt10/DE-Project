@@ -20,7 +20,8 @@ import MainAdminPanel from "./pages/MainAdminPanel";
 import Verifications from "./pages/Verifications";
 
 // 🤝 Deal & Chat
-import DealConfirmationPage from "./pages/DealConfirmationPage";
+import DealPortalPage from "./pages/DealPortalPage";
+import RequestPortal from "./pages/RequestPortal";    
 import ChatPage from "./pages/ChatPage"; 
 
 
@@ -46,15 +47,16 @@ function App() {
       <Route path="/verifications" element={<Verifications />} />
 
       {/* 🤝 Deal & Chat Pages */}
-      <Route path="/deal/:requestId" element={<DealConfirmationPage />} />
+      <Route path="/deal/:requestId" element={<DealPortalPage />} />
+     <Route path="/request/:id" element={<RequestPortal />} />
       <Route path="/chat/:requestId" element={<ChatPage />} /> 
 
       {/* ❌ Fallback Route */}
       <Route
         path="*"
         element={
-          <div className="h-screen flex items-center justify-center bg-white dark:bg-gray-900">
-            <h1 className="text-3xl font-bold text-red-500">404 - Page Not Found</h1>
+          <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
+            <h1 className="text-3xl font-bold text-teal-800">Page under maintanence,please try later. </h1>
           </div>
         }
       />

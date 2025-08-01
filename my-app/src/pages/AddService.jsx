@@ -32,7 +32,6 @@ const AddService = () => {
     return () => unsub();
   }, [navigate]);
 
-  // Accurate location using Geoapify
   useEffect(() => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(async (position) => {
@@ -117,20 +116,20 @@ const AddService = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white to-blue-50 dark:from-[#1e1e2e] dark:to-[#121212] px-6 py-10 text-black dark:text-white font-['Manrope']">
+    <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
       <motion.div
         className="max-w-3xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold mb-6 text-center text-pink-500">
+        <h1 className="text-3xl font-bold mb-6 text-center text-teal-400">
           Add New Service
         </h1>
 
         <form
           onSubmit={handleAddService}
-          className="space-y-4 bg-white dark:bg-white/5 p-6 rounded-xl shadow-md border border-gray-300 dark:border-white/10"
+          className="space-y-4 bg-white/5 p-6 rounded-xl shadow-md border border-white/10"
         >
           <input
             type="text"
@@ -140,7 +139,7 @@ const AddService = () => {
               setServiceData({ ...serviceData, name: e.target.value })
             }
             required
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           />
 
           <textarea
@@ -151,7 +150,7 @@ const AddService = () => {
             }
             rows="4"
             required
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           ></textarea>
 
           <input
@@ -163,7 +162,7 @@ const AddService = () => {
             }
             required
             min="0"
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           />
 
           <select
@@ -172,11 +171,11 @@ const AddService = () => {
               setServiceData({ ...serviceData, category: e.target.value })
             }
             required
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat}>
+              <option key={cat} value={cat} className="text-black">
                 {cat}
               </option>
             ))}
@@ -190,7 +189,7 @@ const AddService = () => {
               setServiceData({ ...serviceData, address: e.target.value })
             }
             required
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           />
 
           <input
@@ -198,7 +197,7 @@ const AddService = () => {
             placeholder="Location"
             value={serviceData.location}
             readOnly
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600 text-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           />
 
           <select
@@ -207,7 +206,7 @@ const AddService = () => {
               setServiceData({ ...serviceData, availability: e.target.value })
             }
             required
-            className="w-full p-3 rounded border bg-gray-100 dark:bg-gray-800 dark:border-gray-600"
+            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
           >
             <option value="">Select Availability</option>
             <option value="Weekdays">Weekdays</option>
@@ -221,7 +220,7 @@ const AddService = () => {
               accept="image/*"
               multiple
               onChange={handleImageChange}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-pink-500 file:text-white hover:file:bg-pink-600"
+              className="block w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-teal-700 file:text-white hover:file:bg-teal-600"
               required
             />
             {imagePreviews.length > 0 && (
@@ -241,7 +240,7 @@ const AddService = () => {
           <button
             type="submit"
             disabled={uploading}
-            className="w-full py-3 bg-gradient-to-r from-pink-500 to-blue-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform"
+            className="w-full py-3 bg-gradient-to-r from-teal-700 to-teal-500 text-white font-semibold rounded-lg hover:scale-105 transition-transform"
           >
             {uploading ? "Uploading..." : "Add Service"}
           </button>

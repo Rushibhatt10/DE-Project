@@ -66,20 +66,26 @@ const ProviderAdmin = () => {
     setRequests(data);
   };
 
-  const handleStatusUpdate = async (requestId, newStatus) => {
-    try {
-      const requestRef = doc(db, "user_requests", requestId);
-      await updateDoc(requestRef, { status: newStatus });
-      setRequests((prev) =>
-        prev.map((req) =>
-          req.id === requestId ? { ...req, status: newStatus } : req
-        )
-      );
-    } catch (err) {
-      console.error("Error updating request status:", err);
-      alert("Failed to update request status.");
+ const handleStatusUpdate = async (requestId, newStatus) => {
+  try {
+    const requestRef = doc(db, "user_requests", requestId);
+    await updateDoc(requestRef, { status: newStatus });
+    setRequests((prev) =>
+      prev.map((req) =>
+        req.id === requestId ? { ...req, status: newStatus } : req
+      )
+    );
+
+    // 👇 Redirect after accepting
+    if (newStatus === "Accepted") {
+      navigate(`/request/${requestId}`);
     }
-  };
+  } catch (err) {
+    console.error("Error updating request status:", err);
+    alert("Failed to update request status.");
+  }
+};
+
 
   const handleDeleteService = async (serviceId) => {
     if (!window.confirm("Are you sure you want to delete this service?")) return;
@@ -97,7 +103,7 @@ const ProviderAdmin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9f9fb] dark:bg-[#1e1e2e] text-black dark:text-white px-6 py-10 font-['Manrope']">
+    <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0 }}
@@ -105,12 +111,12 @@ const ProviderAdmin = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-4xl font-extrabold text-pink-500 dark:text-pink-400">
+          <h1 className="text-4xl font-extrabold text-teal-800">
             Provider Admin Panel
           </h1>
           <button
             onClick={() => navigate("/add-service")}
-            className="bg-pink-500 hover:bg-pink-700 text-white px-5 py-2 rounded-lg shadow transition font-semibold"
+            className="bg-teal-800 hover:bg-teal-700 text-white px-5 py-2 rounded-lg shadow transition font-semibold"
           >
             + Add Service
           </button>
@@ -119,7 +125,7 @@ const ProviderAdmin = () => {
         {providerProfile && (
           <div className="flex flex-col md:flex-row gap-8 mb-12 bg-white dark:bg-[#2c2c2c] p-6 rounded-xl border border-gray-200 dark:border-white/10 shadow">
             <div className="flex-1 space-y-2">
-              <h2 className="text-2xl font-semibold text-blue-600 dark:text-blue-400">
+              <h2 className="text-2xl font-semibold text-teal-800 dark:text-teal-600">
                 Provider Profile
               </h2>
               <p><strong>Name:</strong> {providerProfile.fullName}</p>
@@ -153,13 +159,13 @@ const ProviderAdmin = () => {
               className="p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl shadow"
             >
               <p className="text-sm text-gray-500">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stat.value}</h3>
+              <h3 className="text-2xl font-bold text-teal-800 dark:text-teal-600">{stat.value}</h3>
             </div>
           ))}
         </div>
 
         <div className="mb-12">
-          <h2 className="text-2xl font-bold mb-4 text-pink-500 dark:text-pink-400">
+          <h2 className="text-2xl font-bold mb-4 text-teal-800 dark:text-teal-600">
             <PackageCheck className="inline w-5 h-5 mr-2" />
             Your Services
           </h2>
@@ -172,7 +178,7 @@ const ProviderAdmin = () => {
                   key={service.id}
                   className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-white/10 p-5 rounded-xl shadow space-y-2"
                 >
-                  <h3 className="font-bold text-lg text-blue-600 dark:text-blue-400">{service.name}</h3>
+                  <h3 className="font-bold text-lg text-teal-800 dark:text-teal-600">{service.name}</h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300">{service.description}</p>
                   <p className="text-sm font-medium">₹{service.price}</p>
                   <p className="text-sm">Category: {service.category}</p>
@@ -200,7 +206,7 @@ const ProviderAdmin = () => {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold mb-4 text-pink-500 dark:text-pink-400">
+          <h2 className="text-2xl font-bold mb-4 text-teal-800 dark:text-teal-600">
             <Mail className="inline w-5 h-5 mr-2" />
             User Requests
           </h2>
@@ -253,7 +259,7 @@ const ProviderAdmin = () => {
                   {req.status === "Accepted" && (
                     <button
                       onClick={() => handleStatusUpdate(req.id, "Completed")}
-                      className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center gap-1"
+                      className="mt-2 px-4 py-2 bg-teal-800 text-white rounded hover:bg-teal-700 flex items-center gap-1"
                     >
                       <Loader2 className="w-4 h-4 animate-spin" /> Mark Completed
                     </button>
