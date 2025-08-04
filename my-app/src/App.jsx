@@ -22,9 +22,7 @@ import Verifications from "./pages/Verifications";
 // 🤝 Deal & Chat
 import DealPortalPage from "./pages/DealPortalPage";
 import RequestPortal from "./pages/RequestPortal";    
-import ChatPage from "./pages/ChatPage"; 
-
-
+ 
 function App() {
   return (
     <Routes>
@@ -49,7 +47,7 @@ function App() {
       {/* 🤝 Deal & Chat Pages */}
       <Route path="/deal/:requestId" element={<DealPortalPage />} />
      <Route path="/request/:id" element={<RequestPortal />} />
-      <Route path="/chat/:requestId" element={<ChatPage />} /> 
+       
 
       {/* ❌ Fallback Route */}
       <Route

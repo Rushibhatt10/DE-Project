@@ -206,7 +206,7 @@ const AddService = () => {
               setServiceData({ ...serviceData, availability: e.target.value })
             }
             required
-            className="w-full p-3 rounded border border-white/20 bg-white/10 text-white"
+            className="w-full p-3 rounded border border-white/20 bg-black/10 text-white"
           >
             <option value="">Select Availability</option>
             <option value="Weekdays">Weekdays</option>

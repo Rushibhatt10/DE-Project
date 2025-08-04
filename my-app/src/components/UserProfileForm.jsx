@@ -37,7 +37,7 @@ const UserProfileForm = ({ onSave }) => {
     e.preventDefault();
     const userRef = doc(db, "users", user.uid);
     await setDoc(userRef, { ...formData, email: user.email, role: "user" }, { merge: true });
-    if (onSave) onSave(); // optional callback
+    if (onSave) onSave(); 
     alert("Profile updated!");
   };
 

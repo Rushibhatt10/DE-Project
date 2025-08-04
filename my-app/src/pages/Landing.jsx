@@ -6,9 +6,7 @@ import {
   Hammer, Fan, ShieldCheck, UserCheck,
   Timer, Mail
 } from "lucide-react";
-import DarkVeil from "../components/DarkVeil";
 import { Link as RouterLink } from "react-router-dom";
-
 
 // Navbar component for page anchor navigation
 const Navbar = () => (
@@ -64,8 +62,6 @@ const Section = ({ title, children, id }) => (
 
 const LandingPage = () => (
   <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
-    <DarkVeil hueShift={10} noiseIntensity={0.05} scanlineIntensity={0.2} speed={0.3}
-      scanlineFrequency={25} warpAmount={0.05} resolutionScale={1} />
     <div className="absolute inset-0 bg-[#0f0f0f] z-0" />
     <div className="absolute inset-0 bg-black/20 z-[1]" />
 

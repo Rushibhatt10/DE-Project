@@ -117,8 +117,8 @@ const UserDashboard = () => {
             <h1 className="text-3xl font-bold text-teal-800">
               Welcome {userEmail ? `(${userEmail})` : ""}
             </h1>
-            <div className="flex items-center gap-2 text-sm text-teal-500 mt-1">
-              <MapPin className="w-4 h-4 text-teal-500" />
+            <div className="flex items-center gap-2 text-sm text-teal-800 mt-1">
+              <MapPin className="w-4 h-4 text-teal-800" />
               <span>{location}</span>
             </div>
           </div>
