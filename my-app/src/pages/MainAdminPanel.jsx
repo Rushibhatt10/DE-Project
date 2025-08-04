@@ -11,13 +11,10 @@ import {
   User,
   BadgeCheck,
   ListOrdered,
-  Briefcase,
-  Mail,
-  Home,
-  FileText
+  Briefcase
 } from "lucide-react";
 
-const PASSWORD = "Rushzzz@10"; 
+const PASSWORD = "Rushzzz@10";
 
 const MainAdminPanel = () => {
   const [userRequests, setUserRequests] = useState([]);
@@ -78,18 +75,18 @@ const MainAdminPanel = () => {
 
   if (!accessGranted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-blue-50 dark:from-[#1e1e2e] dark:to-[#121212] text-black dark:text-white font-['Manrope']">
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md w-full max-w-sm border border-gray-200 dark:border-white/10">
-          <h2 className="text-xl font-bold mb-4 text-center text-pink-500">🔐 Enter Admin Password</h2>
+      <div className="min-h-screen flex items-center justify-center bg-[#0f0f0f] text-white font-['Manrope']">
+        <form onSubmit={handleSubmit} className="bg-teal-950/40 p-6 rounded-xl shadow-md w-full max-w-sm border border-teal-600">
+          <h2 className="text-xl font-bold mb-4 text-center text-teal-400">🔐 Enter Admin Password</h2>
           <input
             type="password"
             value={enteredPassword}
             onChange={(e) => setEnteredPassword(e.target.value)}
             placeholder="Password"
             required
-            className="w-full p-3 rounded-lg border dark:bg-gray-900 dark:border-gray-600 mb-4"
+            className="w-full p-3 rounded-lg bg-[#1a1a1a] border border-teal-600 text-white mb-4"
           />
-          <button type="submit" className="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 rounded-lg">
+          <button type="submit" className="w-full bg-teal-600 hover:bg-teal-700 text-white py-2 rounded-lg">
             Access Panel
           </button>
         </form>
@@ -98,26 +95,26 @@ const MainAdminPanel = () => {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-br from-white to-blue-50 dark:from-[#1e1e2e] dark:to-[#121212] text-black dark:text-white font-['Manrope']">
+    <div className="min-h-screen p-6 bg-[#0f0f0f] text-white font-['Manrope']">
       <motion.h1
-        className="text-4xl font-bold text-center text-pink-600 mb-8"
+        className="text-4xl font-bold text-center text-teal-400 mb-8"
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
       >
         Main Admin Panel - Overview
       </motion.h1>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-blue-500 flex items-center gap-2 mb-4"><ListOrdered /> All Service Requests</h2>
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4"><ListOrdered className="text-teal-400" /> All Service Requests</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {userRequests.map((r, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-white/10 shadow">
+            <div key={idx} className="bg-[#1a1a1a] rounded-xl p-5 border border-teal-600 shadow">
               <p><strong>User:</strong> {r.userName} ({r.userEmail})</p>
               <p><strong>Service:</strong> {r.serviceName}</p>
               <p><strong>Provider:</strong> {r.providerName}</p>
-              <p><strong>Status:</strong> <span className="font-semibold text-pink-600">{r.status}</span></p>
+              <p><strong>Status:</strong> <span className="font-semibold text-teal-400">{r.status}</span></p>
               <p><strong>Feedback:</strong> {r.feedback}</p>
               <p><strong>Rating:</strong> ⭐ {r.rating}</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-white/60 mt-1">
                 {r.timestamp?.seconds ? new Date(r.timestamp.seconds * 1000).toLocaleString() : "No timestamp"}
               </p>
             </div>
@@ -126,10 +123,10 @@ const MainAdminPanel = () => {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-indigo-500 flex items-center gap-2 mb-4"><Briefcase /> All Services by Providers</h2>
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4"><Briefcase className="text-teal-400" /> All Services by Providers</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {providerServices.map((s, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-white/10 shadow">
+            <div key={idx} className="bg-[#1a1a1a] rounded-xl p-5 border border-teal-600 shadow">
               <p><strong>Name:</strong> {s.name}</p>
               <p><strong>Category:</strong> {s.category}</p>
               <p><strong>Price:</strong> ₹{s.price}</p>
@@ -141,10 +138,10 @@ const MainAdminPanel = () => {
       </section>
 
       <section className="mb-12">
-        <h2 className="text-2xl font-semibold text-green-600 flex items-center gap-2 mb-4"><BadgeCheck /> Verified Providers</h2>
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4"><BadgeCheck className="text-teal-400" /> Verified Providers</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {verifiedProviders.map((p, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-white/10 shadow">
+            <div key={idx} className="bg-[#1a1a1a] rounded-xl p-5 border border-teal-600 shadow">
               <p><strong>Name:</strong> {p.name}</p>
               <p><strong>Email:</strong> {p.email}</p>
               <p><strong>Phone:</strong> {p.phone}</p>
@@ -156,10 +153,10 @@ const MainAdminPanel = () => {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-purple-500 flex items-center gap-2 mb-4"><User /> Registered Users</h2>
+        <h2 className="text-2xl font-semibold text-white flex items-center gap-2 mb-4"><User className="text-teal-400" /> Registered Users</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {users.map((u, idx) => (
-            <div key={idx} className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-white/10 shadow">
+            <div key={idx} className="bg-[#1a1a1a] rounded-xl p-5 border border-teal-600 shadow">
               <p><strong>Name:</strong> {u.name}</p>
               <p><strong>Email:</strong> {u.email}</p>
               <p><strong>Phone:</strong> {u.phone || "Not provided"}</p>

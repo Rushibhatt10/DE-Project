@@ -95,6 +95,14 @@ const RequestPortal = () => {
             <p><span className="text-teal-200">Name:</span> {requestData.providerName || "N/A"}</p>
             <p><span className="text-teal-200">Email:</span> {requestData.providerEmail}</p>
             <p><span className="text-teal-200">Phone:</span> {requestData.providerPhone || "N/A"}</p>
+
+            {/* ✅ Pay Now Button */}
+            <button
+              className="mt-4 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg"
+              onClick={() => alert("Payment gateway is under construction.")}
+            >
+              Pay Now
+            </button>
           </div>
         )}
 
