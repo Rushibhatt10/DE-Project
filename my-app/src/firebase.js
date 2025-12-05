@@ -3,6 +3,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore, enableNetwork } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDake_cf9YqW8p9rzLsTH0mp_YIyDjVlUE",
@@ -22,5 +23,7 @@ const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 enableNetwork(db).catch(console.error);
 
-export { auth, db, provider };
+const storage = getStorage(app);
+
+export { auth, db, provider, storage };
 export { app };

@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import emailjs from "@emailjs/browser";
 import {
   ArrowLeft,
@@ -24,7 +24,11 @@ import {
   BadgeCheck,
   CalendarCheck,
   Tag,
+  Star
 } from "lucide-react";
+import BookingWizard from "../components/booking/BookingWizard";
+import Card from "../components/ui/Card";
+import MagneticButton from "../components/ui/MagneticButton";
 
 const ServiceDetails = () => {
   const { id } = useParams();
@@ -33,6 +37,7 @@ const ServiceDetails = () => {
   const [userEmail, setUserEmail] = useState(null);
   const [userId, setUserId] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [showBookingWizard, setShowBookingWizard] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -82,19 +87,27 @@ const ServiceDetails = () => {
     fetchFeedback();
   }, [userId, id]);
 
-  const sendEmails = async () => {
+  const sendEmails = async (bookingDetails) => {
     try {
       const templateParamsUser = {
         to_email: userEmail,
         service_name: service.name,
+        date: new Date(bookingDetails.date).toLocaleDateString(),
+        time: bookingDetails.timeSlot,
+        address: bookingDetails.address
       };
 
       const templateParamsProvider = {
         to_email: service.providerEmail,
         user_email: userEmail,
         service_name: service.name,
+        date: new Date(bookingDetails.date).toLocaleDateString(),
+        time: bookingDetails.timeSlot,
+        address: bookingDetails.address,
+        description: bookingDetails.description
       };
 
+      // Note: Replace with actual EmailJS service/template IDs
       await emailjs.send(
         "service_hsrbila",
         "template_eiv8arm",
@@ -113,152 +126,183 @@ const ServiceDetails = () => {
     }
   };
 
-  const handleRequestService = async () => {
-  if (!userEmail || !service) return;
+  const handleConfirmBooking = async (bookingDetails) => {
+    if (!userEmail || !service) return;
 
-  try {
-    const requestRef = await addDoc(collection(db, "user_requests"), {
-      serviceId: service.id,
-      serviceName: service.name,
-      providerUid: service.providerUid || "",
-      providerEmail: service.providerEmail,
-      userId: userId,
-      userEmail: userEmail,
-      status: "Pending",
-      timestamp: serverTimestamp(),
-    });
+    try {
+      const requestRef = await addDoc(collection(db, "user_requests"), {
+        serviceId: service.id,
+        serviceName: service.name,
+        providerUid: service.providerUid || "",
+        providerEmail: service.providerEmail,
+        userId: userId,
+        userEmail: userEmail,
+        status: "Pending",
+        timestamp: serverTimestamp(),
+        ...bookingDetails // Add description, address, date, timeSlot, coordinates
+      });
 
-    await sendEmails();
+      await sendEmails(bookingDetails);
 
-    alert("Request sent successfully! Confirmation email sent.");
-
-    // ✅ Correct navigation to actual request ID
-    navigate(`/request/${requestRef.id}`);
-  } catch (error) {
-    console.error("Error sending request:", error);
-    alert("Failed to send request. Please try again.");
-  }
-};
-
+      setShowBookingWizard(false);
+      alert("Booking requested successfully!");
+      navigate(`/request/${requestRef.id}`);
+    } catch (error) {
+      console.error("Error sending request:", error);
+      alert("Failed to send request. Please try again.");
+    }
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0f0f0f] text-white flex justify-center items-center">
-        <p className="text-lg text-teal-400 animate-pulse">Loading service...</p>
+      <div className="min-h-screen bg-background flex justify-center items-center">
+        <p className="text-lg text-primary animate-pulse">Loading service...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white py-8 px-4">
+    <div className="min-h-screen bg-background text-foreground py-8 px-4 font-sans">
       <motion.div
         className="max-w-5xl mx-auto"
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
+        transition={{ duration: 0.5 }}
       >
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 flex items-center gap-2 text-teal-400 hover:underline"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back
+          <ArrowLeft className="w-4 h-4" /> Back to Dashboard
         </button>
 
-        {service.imageUrls?.length > 0 ? (
-          <img
-            src={service.imageUrls[0]}
-            alt={service.name || "Service Image"}
-            className="w-full max-h-[400px] object-cover rounded-xl shadow mb-6"
-          />
-        ) : (
-          <div className="w-full h-[200px] flex items-center justify-center bg-gray-800 text-gray-400 border border-dashed rounded-xl mb-6">
-            No image preview available
-          </div>
-        )}
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Left Column: Image & Key Info */}
+          <div className="md:col-span-2 space-y-6">
+            <div className="rounded-2xl overflow-hidden shadow-sm border border-border bg-card">
+              {service.imageUrls?.length > 0 ? (
+                <img
+                  src={service.imageUrls[0]}
+                  alt={service.name}
+                  className="w-full h-[400px] object-cover"
+                />
+              ) : (
+                <div className="w-full h-[300px] flex items-center justify-center bg-secondary text-muted-foreground">
+                  No image available
+                </div>
+              )}
+            </div>
 
-        <motion.h1
-          className="text-4xl font-extrabold text-teal-400 mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          {service.name}
-        </motion.h1>
-        <motion.p
-          className="text-lg text-gray-300 mb-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          {service.description}
-        </motion.p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <Tag className="text-teal-400 w-5 h-5" />
-              <span className="text-white"><strong>Price:</strong> ₹{service.price}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <BadgeCheck className="text-blue-400 w-5 h-5" />
-              <span className="text-white"><strong>Category:</strong> {service.category}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CalendarCheck className="text-green-400 w-5 h-5" />
-              <span className="text-white"><strong>Availability:</strong> {service.availability}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <MapPin className="text-yellow-400 w-5 h-5" />
-              <span className="text-white"><strong>Location:</strong> {service.location}</span>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <User className="text-teal-400 w-5 h-5" />
-              <span className="text-white"><strong>Provider:</strong> {service.providerName || "Unknown"}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Mail className="text-blue-400 w-5 h-5" />
-              <span className="text-white"><strong>Email:</strong> {service.providerEmail}</span>
-            </div>
-            {service.contact && (
-              <div className="flex items-center gap-3">
-                <Phone className="text-green-400 w-5 h-5" />
-                <span className="text-white"><strong>Phone:</strong> {service.contact}</span>
+            <div className="space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">{service.name}</h1>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-4 h-4" />
+                    <span>{service.location}</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-primary">₹{service.price}</div>
+                  <div className="text-sm text-muted-foreground">per service</div>
+                </div>
               </div>
-            )}
-            {service.verified && (
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="text-emerald-400 w-5 h-5" />
-                <span className="text-emerald-400 font-medium">Verified Provider</span>
+
+              <div className="flex gap-4 border-y border-border py-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-sm font-medium">
+                  <BadgeCheck className="w-4 h-4 text-primary" />
+                  {service.category}
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-sm font-medium">
+                  <CalendarCheck className="w-4 h-4 text-primary" />
+                  {service.availability}
+                </div>
+                {service.verified && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 text-green-600 text-sm font-medium">
+                    <ShieldCheck className="w-4 h-4" />
+                    Verified
+                  </div>
+                )}
               </div>
-            )}
+
+              <div>
+                <h2 className="text-xl font-bold mb-3">Description</h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  {service.description}
+                </p>
+              </div>
+
+              {/* Feedback Section */}
+              {feedback && (
+                <div className="mt-8 bg-secondary/30 rounded-xl p-6 border border-border">
+                  <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    Your Feedback
+                  </h3>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-bold text-foreground">{feedback.rating}/5</span>
+                    <div className="flex">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < feedback.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-muted-foreground italic">"{feedback.feedback}"</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Column: Provider Card & CTA */}
+          <div className="space-y-6">
+            <Card className="p-6 sticky top-24">
+              <h3 className="text-lg font-bold mb-4">Provider Details</h3>
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                  {service.providerName?.[0] || "P"}
+                </div>
+                <div>
+                  <div className="font-bold">{service.providerName || "Provider"}</div>
+                  <div className="text-sm text-muted-foreground">{service.providerEmail}</div>
+                </div>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {service.contact && (
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Phone className="w-4 h-4" />
+                    {service.contact}
+                  </div>
+                )}
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <Mail className="w-4 h-4" />
+                  {service.providerEmail}
+                </div>
+              </div>
+
+              <MagneticButton
+                onClick={() => setShowBookingWizard(true)}
+                className="w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-primary/90 transition-all"
+              >
+                Book Now
+              </MagneticButton>
+              <p className="text-xs text-center text-muted-foreground mt-3">
+                No payment required until service is complete.
+              </p>
+            </Card>
           </div>
         </div>
-
-        <motion.div
-          className="mt-16 flex flex-col sm:flex-row sm:justify-center gap-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <button
-            onClick={handleRequestService}
-            className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg shadow-md hover:shadow-xl hover:bg-teal-500 transition"
-          >
-            Request Service
-          </button>
-        </motion.div>
-
-        {feedback && (
-          <div className="mt-12 bg-teal-900/20 backdrop-blur border border-teal-600/30 rounded-xl p-6">
-            <h3 className="text-xl font-semibold text-yellow-300 mb-2">Feedback</h3>
-            <p className="text-white mb-1">⭐ {feedback.rating} / 5</p>
-            <p className="text-white/80 italic">“{feedback.feedback}”</p>
-          </div>
-        )}
       </motion.div>
+
+      <AnimatePresence>
+        {showBookingWizard && (
+          <BookingWizard
+            service={service}
+            onClose={() => setShowBookingWizard(false)}
+            onConfirm={handleConfirmBooking}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,147 +1,204 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Link } from "react-scroll";
-import {
-  Plug, Droplets, Brush, Paintbrush2,
-  Hammer, Fan, ShieldCheck, UserCheck,
-  Timer, Mail
-} from "lucide-react";
+import React, { useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Link as RouterLink } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { ArrowRight, CheckCircle, Star, Shield, Clock, Zap } from "lucide-react";
 
-// Navbar component for page anchor navigation
+import MagneticButton from "../components/ui/MagneticButton";
+import GlassCard from "../components/ui/GlassCard";
+import FloatingElement from "../components/ui/FloatingElement";
+import InputGroup from "../components/ui/InputGroup";
+import ThemeToggle from "../components/ui/ThemeToggle";
+
+// Minimal Navbar
 const Navbar = () => (
-  <nav className="w-full px-6 py-4 bg-black/40 backdrop-blur-sm text-white flex justify-between items-center fixed top-0 z-50">
-    <div className="text-2xl font-bold text-teal-400">DEProject</div>
-    <div className="space-x-6 text-sm">
-      <Link to="about" smooth={true} duration={500} className="cursor-pointer hover:text-teal-400">About</Link>
-      <Link to="services" smooth={true} duration={500} className="cursor-pointer hover:text-teal-400">Services</Link>
-      <Link to="contact" smooth={true} duration={500} className="cursor-pointer hover:text-teal-400">Contact</Link>
+  <motion.nav
+    initial={{ y: -100 }}
+    animate={{ y: 0 }}
+    transition={{ duration: 0.5 }}
+    className="w-full px-6 py-6 flex justify-between items-center fixed top-0 z-50 pointer-events-none"
+  >
+    <div className="pointer-events-auto flex items-center gap-2">
+      <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+        <span className="font-bold text-primary-foreground text-xl">D</span>
+      </div>
+      <div className="text-xl font-bold tracking-tight hidden md:block">DEProject</div>
     </div>
-  </nav>
+
+    <div className="pointer-events-auto">
+      <ThemeToggle />
+    </div>
+  </motion.nav>
 );
 
-const services = [
-  { title: "Electrician", icon: <Plug className="w-6 h-6 text-teal-400" /> },
-  { title: "Plumber", icon: <Droplets className="w-6 h-6 text-teal-400" /> },
-  { title: "Cleaner", icon: <Brush className="w-6 h-6 text-teal-400" /> },
-  { title: "Painter", icon: <Paintbrush2 className="w-6 h-6 text-teal-400" /> },
-  { title: "Carpenter", icon: <Hammer className="w-6 h-6 text-teal-400" /> },
-  { title: "AC Mechanic", icon: <Fan className="w-6 h-6 text-teal-400" /> },
-];
+const LandingPage = () => {
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 100]);
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i = 1) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.15, duration: 0.6, ease: "easeOut" },
-  }),
-};
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
 
-// Reusable section component
-const Section = ({ title, children, id }) => (
-  <section id={id} className="min-h-screen flex flex-col justify-center items-center px-4 py-16">
-    <motion.h2
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7 }}
-      className="text-4xl font-bold mb-4 text-teal-400"
-    >
-      {title}
-    </motion.h2>
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-      className="text-center text-white max-w-3xl"
-    >
-      {children}
-    </motion.div>
-  </section>
-);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-const LandingPage = () => (
-  <div className="relative bg-[#0f0f0f] text-white overflow-hidden">
-    <div className="absolute inset-0 bg-[#0f0f0f] z-0" />
-    <div className="absolute inset-0 bg-black/20 z-[1]" />
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      toast.success("Message sent successfully!");
+      setFormData({ name: "", email: "", message: "" });
+      setLoading(false);
+    }, 1500);
+  };
 
-    <div className="relative z-10">
+  return (
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden font-sans selection:bg-primary/30">
+      {/* Background Noise & Ambient Glow */}
+      <div className="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0 pointer-events-none mix-blend-overlay"></div>
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[150px] animate-pulse"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 rounded-full blur-[150px] animate-pulse delay-1000"></div>
+      </div>
+
       <Navbar />
 
-      {/* Hero */}
-      <section className="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-28">
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-5xl md:text-7xl font-extrabold text-white"
+      {/* Hero Section */}
+      <section className="min-h-screen flex flex-col justify-center items-center text-center px-6 relative z-10 pt-20">
+        <motion.div
+          style={{ y: y1, opacity }}
+          className="max-w-4xl mx-auto flex flex-col items-center"
         >
-          On‑Demand Household & Tiffin Services
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-4 text-lg text-white"
-        >
-          Book skilled professionals instantly. Plumbing, electrical, tiffin services in just a few clicks.
-        </motion.p>
-        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-          <RouterLink
-            to="/signup"
-            className="inline-block mt-8 px-6 py-3 rounded-full bg-teal-800 hover:bg-teal-400 text-white font-semibold transition-all"
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Get Started
-          </RouterLink>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 border border-border backdrop-blur-sm text-sm font-medium text-secondary-foreground mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Live in your city
+            </div>
+
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[1.1]">
+              The Ultimate <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-foreground to-primary/50">
+                Household Services
+              </span>{" "}
+              Platform
+            </h1>
+          </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl leading-relaxed"
+          >
+            Connects users with household service providers in a fast and seamless way.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
+          >
+            <RouterLink to="/signin" className="w-full sm:w-auto">
+              <MagneticButton className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]">
+                Sign in as User
+              </MagneticButton>
+            </RouterLink>
+            <RouterLink to="/signin" className="w-full sm:w-auto">
+              <MagneticButton className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-card border border-border hover:border-primary/50 text-foreground font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] backdrop-blur-sm">
+                Sign in as Provider
+              </MagneticButton>
+            </RouterLink>
+          </motion.div>
         </motion.div>
+
+        {/* Floating Elements for visual interest */}
+        <FloatingElement delay={0} duration={8} className="absolute top-1/4 left-[10%] opacity-20 blur-[2px] hidden lg:block pointer-events-none">
+          <Shield className="w-24 h-24 text-primary" />
+        </FloatingElement>
+        <FloatingElement delay={2} duration={9} className="absolute bottom-1/3 right-[10%] opacity-20 blur-[2px] hidden lg:block pointer-events-none">
+          <Zap className="w-20 h-20 text-secondary-foreground" />
+        </FloatingElement>
       </section>
 
-      {/* About */}
-      <Section title="About Us" id="about">
-        We bridge the gap between users and verified professionals. Our platform simplifies bookings, ensures reliability, and delivers fast solutions.
-      </Section>
+      {/* Contact Section - Minimal Redesign */}
+      <section className="py-24 px-6 relative z-10">
+        <div className="max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
+              <p className="text-muted-foreground">We'd love to hear from you.</p>
+            </div>
 
-      {/* Services */}
-      <Section title="Our Services" id="services">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-6 mt-6">
-          {services.map((service, idx) => (
-            <motion.div
-              key={idx}
-              className="bg-[#1e1e1e] p-4 rounded-xl shadow-md hover:shadow-teal-500/20 text-center"
-              variants={fadeInUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={idx + 1}
-            >
-              <div className="flex justify-center mb-2">{service.icon}</div>
-              <p className="text-sm font-semibold text-white">{service.title}</p>
-            </motion.div>
-          ))}
+            <GlassCard className="p-8 md:p-12 bg-card/40 border-border/50 backdrop-blur-md">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <InputGroup
+                    label="Name"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Your Name"
+                  />
+                  <InputGroup
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground ml-1">Message</label>
+                  <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows="4"
+                    className="w-full px-5 py-4 rounded-xl bg-input/50 text-foreground border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-300 resize-none placeholder-muted-foreground/50"
+                    placeholder="How can we help?"
+                  ></textarea>
+                </div>
+                <div className="flex justify-center pt-2">
+                  <MagneticButton
+                    type="submit"
+                    className="px-12 py-4 rounded-xl bg-foreground text-background hover:bg-foreground/90 font-bold text-lg flex items-center gap-2 transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {loading ? "Sending..." : "Send Message"}
+                  </MagneticButton>
+                </div>
+              </form>
+            </GlassCard>
+          </motion.div>
         </div>
-      </Section>
+      </section>
 
-      {/* Contact */}
-      <Section title="Contact Us" id="contact">
-        <form action="https://getform.io/f/bkknqryb" method="POST" className="mt-6 space-y-4 w-full max-w-lg mx-auto">
-          <input type="text" name="name" placeholder="Your Name" required
-            className="w-full px-4 py-2 rounded-lg bg-[#1f1f1f] text-white border border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500" />
-          <input type="email" name="email" placeholder="Your Email" required
-            className="w-full px-4 py-2 rounded-lg bg-[#1f1f1f] text-white border border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500" />
-          <textarea name="message" placeholder="Your Message" required rows="4"
-            className="w-full px-4 py-2 rounded-lg bg-[#1f1f1f] text-white border border-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500"></textarea>
-          <button type="submit"
-            className="w-full px-6 py-3 rounded-full bg-teal-800 hover:bg-teal-400 text-white font-bold transition-all flex justify-center items-center">
-            <Mail className="w-5 h-5 mr-2" /> Send Message
-          </button>
-        </form>
-      </Section>
-
-      <footer className="text-center py-6 text-sm text-white">
-        &copy; {new Date().getFullYear()} DEProject. All rights reserved.
+      {/* Footer Credits */}
+      <footer className="py-8 text-center border-t border-border/40 bg-background/50 backdrop-blur-sm">
+        <p className="text-sm text-muted-foreground font-medium">
+          Made by <span className="text-foreground">Rushi Bhatt</span>, <span className="text-foreground">Tirth Vadhvana</span>, <span className="text-foreground">Shyama Hadia</span> and <span className="text-foreground">Vishwa Brahmbhatt</span>
+        </p>
       </footer>
     </div>
-  </div>
-);
+  );
+};
 
 export default LandingPage;

@@ -1,6 +1,11 @@
 // src/pages/Dashboard.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { User, Briefcase } from "lucide-react";
+import GlassCard from "../components/ui/GlassCard";
+import MagneticButton from "../components/ui/MagneticButton";
+import FloatingElement from "../components/ui/FloatingElement";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -11,25 +16,59 @@ function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-gray-100 dark:from-[#0f0f1c] dark:to-[#1e1e2e] px-4">
-      <div className="w-full max-w-lg p-10 bg-white dark:bg-white/10 border dark:border-white/10 shadow-xl backdrop-blur-xl rounded-2xl text-center space-y-6">
-        <h1 className="text-3xl font-bold text-pink-600 dark:text-pink-400">Choose Your Role</h1>
-        <div className="flex flex-col md:flex-row gap-6 justify-center">
-          <button
-            onClick={() => handleSelectRole("user")}
-            className="w-full md:w-auto px-6 py-3 text-white font-medium rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:scale-105 transition-transform"
-          >
-            I am a User
-          </button>
-          <button
-            onClick={() => handleSelectRole("provider")}
-            className="w-full md:w-auto px-6 py-3 text-white font-medium rounded-lg bg-gradient-to-r from-green-500 to-teal-500 hover:scale-105 transition-transform"
-          >
-            I am a Provider
-          </button>
-        </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300">You’ll be redirected to signup.</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden px-4 font-sans transition-colors duration-300">
+      {/* Background Elements */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0 pointer-events-none mix-blend-overlay"></div>
+      <FloatingElement className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
+      <FloatingElement delay={2} className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-full max-w-2xl relative z-10"
+      >
+        <GlassCard className="p-10 md:p-16 border-border bg-card/60 backdrop-blur-xl shadow-2xl text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 tracking-tight">
+            Choose Your Role
+          </h1>
+          <p className="text-muted-foreground text-lg mb-12 max-w-lg mx-auto">
+            Join us to find services or offer your expertise. Select how you want to proceed.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            <MagneticButton
+              onClick={() => handleSelectRole("user")}
+              className="group relative p-8 rounded-2xl bg-secondary border border-border hover:bg-secondary/80 transition-all flex flex-col items-center gap-4 hover:border-primary/50"
+            >
+              <div className="p-4 rounded-full bg-background text-primary group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                <User className="w-8 h-8" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-foreground mb-1">I am a User</h3>
+                <p className="text-sm text-muted-foreground">Looking for services</p>
+              </div>
+            </MagneticButton>
+
+            <MagneticButton
+              onClick={() => handleSelectRole("provider")}
+              className="group relative p-8 rounded-2xl bg-secondary border border-border hover:bg-secondary/80 transition-all flex flex-col items-center gap-4 hover:border-primary/50"
+            >
+              <div className="p-4 rounded-full bg-background text-primary group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                <Briefcase className="w-8 h-8" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-foreground mb-1">I am a Provider</h3>
+                <p className="text-sm text-muted-foreground">Offering services</p>
+              </div>
+            </MagneticButton>
+          </div>
+
+          <p className="text-sm text-muted-foreground mt-10">
+            You’ll be redirected to signup.
+          </p>
+        </GlassCard>
+      </motion.div>
     </div>
   );
 }
