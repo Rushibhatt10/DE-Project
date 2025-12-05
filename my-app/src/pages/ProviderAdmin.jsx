@@ -142,12 +142,12 @@ const ProviderAdmin = () => {
           message: `Your request for ${reqData.serviceName} has been ${newStatus}.`,
           timestamp: serverTimestamp(),
           read: false,
-          link: `/request/${requestId}`
+          link: `/order/${requestId}`
         });
       }
 
       if (newStatus === "Accepted") {
-        navigate(`/request/${requestId}`);
+        navigate(`/order/${requestId}`);
       }
     } catch (err) {
       console.error("Error updating request status:", err);
@@ -225,7 +225,7 @@ const ProviderAdmin = () => {
                     </div>
                     {req.status === "Pending" && (
                       <button
-                        onClick={() => navigate(`/request/${req.id}`)}
+                        onClick={() => navigate(`/order/${req.id}`)}
                         className="mt-2 text-xs text-primary underline"
                       >
                         View Details
@@ -299,9 +299,9 @@ const ProviderAdmin = () => {
                     </MagneticButton>
                   </>
                 )}
-                {(req.status === "Accepted" || req.status === "On the Way" || req.status === "Completed") && (
+                {(req.status !== "Pending" && req.status !== "Rejected") && (
                   <MagneticButton
-                    onClick={() => navigate(`/request/${req.id}`)}
+                    onClick={() => navigate(`/order/${req.id}`)}
                     className="flex-1 md:flex-none px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 shadow-sm"
                   >
                     Open Order Portal

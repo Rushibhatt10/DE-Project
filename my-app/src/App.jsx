@@ -25,6 +25,7 @@ import ResetDatabase from "./pages/ResetDatabase";
 // 🤝 Deal & Chat
 import DealPortalPage from "./pages/DealPortalPage";
 import RequestPortal from "./pages/RequestPortal";
+import OrderPortal from "./pages/OrderPortal";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
         {/* 🤝 Deal & Chat Pages */}
         <Route path="/deal/:requestId" element={<DealPortalPage />} />
         <Route path="/request/:id" element={<RequestPortal />} />
+        <Route path="/order/:orderId" element={<OrderPortal />} />
         <Route path="/reset-db-secure" element={<ResetDatabase />} />
 
 

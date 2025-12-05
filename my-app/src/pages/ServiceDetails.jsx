@@ -146,7 +146,7 @@ const ServiceDetails = () => {
 
       setShowBookingWizard(false);
       alert("Booking requested successfully!");
-      navigate(`/request/${requestRef.id}`);
+      navigate(`/order/${requestRef.id}`);
     } catch (error) {
       console.error("Error sending request:", error);
       alert("Failed to send request. Please try again.");
