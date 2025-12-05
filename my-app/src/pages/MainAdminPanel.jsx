@@ -7,7 +7,8 @@ import {
   updateDoc,
   serverTimestamp
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, db } from "../firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
@@ -327,34 +328,54 @@ const MainAdminPanel = () => {
 
   useEffect(() => {
     if (accessGranted) {
-      fetchData();
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          fetchData();
+        } else {
+          toast.error("Database access requires authentication. Please log in.");
+          setLoading(false);
+        }
+      });
+      return () => unsubscribe();
     }
   }, [accessGranted]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch all collections in parallel
-      const [usersSnap, servicesSnap, requestsSnap, verifiedSnap] = await Promise.all([
+      // Fetch all collections in parallel using allSettled to prevent total failure
+      const results = await Promise.allSettled([
         getDocs(collection(db, "users")),
         getDocs(collection(db, "provider_services")),
         getDocs(collection(db, "user_requests")),
         getDocs(collection(db, "verified_providers"))
       ]);
 
+      const [usersResult, servicesResult, requestsResult, verifiedResult] = results;
+
+      // Helper to get docs or empty array
+      const getData = (result) =>
+        result.status === 'fulfilled' ? result.value.docs.map(d => ({ id: d.id, ...d.data() })) : [];
+
       // Process Users
-      const usersData = usersSnap.docs.map(d => ({ id: d.id, ...d.data(), role: 'user' }));
+      const usersData = getData(usersResult).map(u => ({ ...u, role: 'user' }));
 
       // Process Providers (Verified)
-      const allVerifications = verifiedSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const allVerifications = getData(verifiedResult);
       const approvedProviders = allVerifications.filter(p => p.status === 'APPROVED');
       const pendingVerifications = allVerifications.filter(p => p.status === 'PENDING');
 
       // Process Services
-      const servicesData = servicesSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const servicesData = getData(servicesResult);
 
       // Process Requests
-      const requestsData = requestsSnap.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+      const requestsData = getData(requestsResult);
+
+      // Log errors if any
+      if (usersResult.status === 'rejected') console.error("Error fetching users:", usersResult.reason);
+      if (servicesResult.status === 'rejected') console.error("Error fetching services:", servicesResult.reason);
+      if (requestsResult.status === 'rejected') console.error("Error fetching requests:", requestsResult.reason);
+      if (verifiedResult.status === 'rejected') console.error("Error fetching verifications:", verifiedResult.reason);
 
       // Calculate Stats
       const pendingReqs = requestsData.filter(r => r.status === 'Pending').length;
@@ -389,8 +410,8 @@ const MainAdminPanel = () => {
       setRecentActivity(activity);
 
     } catch (error) {
-      console.error("Error fetching admin data:", error);
-      toast.error("Failed to fetch data");
+      console.error("Error in fetchData:", error);
+      toast.error("Failed to process data");
     } finally {
       setLoading(false);
     }
