@@ -34,6 +34,8 @@ import MagneticButton from "../components/ui/MagneticButton";
 import PaymentModal from "../components/ui/PaymentModal";
 import OrderChat from "../components/chat/OrderChat";
 import { toast } from "react-hot-toast";
+import { calculateOrderEconomics, generateInvoiceNumber } from "../utils/finance";
+import { FileText } from "lucide-react";
 
 const OrderPortal = () => {
     const { orderId } = useParams();
@@ -129,13 +131,53 @@ const OrderPortal = () => {
 
     const handlePaymentSuccess = async () => {
         try {
+            const financials = calculateOrderEconomics(order.price || 0);
+            const invoiceNumber = generateInvoiceNumber();
+            const invoiceData = {
+                invoiceNumber,
+                orderId: orderId,
+                invoiceDate: new Date().toISOString(),
+                userId: currentUser.uid,
+                userDetails: {
+                    name: order.userName || currentUser.displayName || "User", // Fallback
+                    phone: order.userPhone || currentUser.phoneNumber || "N/A",
+                    email: order.userEmail || currentUser.email || "N/A",
+                    address: order.address
+                },
+                providerId: order.providerUid || "platform",
+                serviceDetails: {
+                    name: order.serviceName,
+                    id: order.serviceId || "misc"
+                },
+                financials: financials,
+                paymentMethod: "Online", // In real flow, get from gateway
+                status: "Paid"
+            };
+
+            // Create Invoice
+            const invoiceRef = await addDoc(collection(db, "invoices"), invoiceData);
+
+            // Update Order with payment info
             await updateDoc(doc(db, "user_requests", orderId), {
                 paymentStatus: "Paid",
+                financialSnapshot: financials,
+                invoiceId: invoiceRef.id,
+                paidAt: serverTimestamp()
             });
+
+            // Update order local state to reflect change immediately
+            setOrder(prev => ({
+                ...prev,
+                paymentStatus: "Paid",
+                invoiceId: invoiceRef.id,
+                financialSnapshot: financials
+            }));
+
             setShowPayment(false);
-            toast.success("Payment Successful!");
+            toast.success("Payment Successful! Invoice Generated.");
         } catch (error) {
             console.error("Payment update error", error);
+            toast.error("Payment recorded but invoice generation failed.");
         }
     };
 
@@ -202,9 +244,9 @@ const OrderPortal = () => {
 
                     <div className="flex items-center gap-3">
                         <div className={`px-4 py-1.5 rounded-full text-sm font-bold border ${order.status === "Completed" ? "bg-green-500/10 text-green-500 border-green-500/20" :
-                                order.status === "Cancelled" ? "bg-red-500/10 text-red-500 border-red-500/20" :
-                                    order.status === "Verification Pending" ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20 animate-pulse" :
-                                        "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                            order.status === "Cancelled" ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                                order.status === "Verification Pending" ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20 animate-pulse" :
+                                    "bg-blue-500/10 text-blue-500 border-blue-500/20"
                             }`}>
                             {order.status === "Verification Pending" ? "Wait for User Confirmation" : order.status}
                         </div>
@@ -425,30 +467,52 @@ const OrderPortal = () => {
                             </GlassCard>
                         )}
 
-                        {/* User Payment */}
                         {isUser && (
                             <GlassCard className="p-6">
                                 <h3 className="font-bold mb-4">Payment</h3>
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="text-muted-foreground">Total Amount</span>
-                                    <span className="text-2xl font-bold">₹{(parseInt(order.price || 0) + 50)}</span>
-                                </div>
 
                                 {order.paymentStatus === "Paid" ? (
-                                    <div className="w-full py-3 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl flex items-center justify-center gap-2 font-bold">
-                                        <CheckCircle2 className="w-5 h-5" /> Paid
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-muted-foreground">Total Paid</span>
+                                            <span className="text-2xl font-bold">
+                                                ₹{(order.financialSnapshot?.grandTotal || (parseInt(order.price || 0) * 1.18)).toFixed(2)}
+                                            </span>
+                                        </div>
+                                        <div className="w-full py-3 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl flex items-center justify-center gap-2 font-bold">
+                                            <CheckCircle2 className="w-5 h-5" /> Paid
+                                        </div>
+                                        {order.invoiceId && (
+                                            <MagneticButton
+                                                onClick={() => navigate(`/invoice/${order.invoiceId}`)}
+                                                className="w-full py-3 bg-secondary hover:bg-secondary/80 text-foreground font-bold rounded-xl flex items-center justify-center gap-2"
+                                            >
+                                                <FileText className="w-4 h-4" /> View Invoice
+                                            </MagneticButton>
+                                        )}
                                     </div>
-                                ) : order.status === "Completed" ? (
-                                    <MagneticButton
-                                        onClick={() => setShowPayment(true)}
-                                        className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/30 flex items-center justify-center gap-2"
-                                    >
-                                        <CreditCard className="w-5 h-5" /> Pay Now
-                                    </MagneticButton>
                                 ) : (
-                                    <div className="w-full py-3 bg-secondary text-muted-foreground rounded-xl text-center text-sm">
-                                        Payment unlocks after completion
-                                    </div>
+                                    <>
+                                        <div className="flex justify-between items-center mb-6">
+                                            <span className="text-muted-foreground">Estimate Total</span>
+                                            {/* Show estimated total including gst */}
+                                            <span className="text-2xl font-bold">
+                                                ₹{(calculateOrderEconomics(order.price || 0).grandTotal)}
+                                            </span>
+                                        </div>
+                                        {order.status === "Completed" ? (
+                                            <MagneticButton
+                                                onClick={() => setShowPayment(true)}
+                                                className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/30 flex items-center justify-center gap-2"
+                                            >
+                                                <CreditCard className="w-5 h-5" /> Pay Now
+                                            </MagneticButton>
+                                        ) : (
+                                            <div className="w-full py-3 bg-secondary text-muted-foreground rounded-xl text-center text-sm">
+                                                Payment unlocks after completion
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </GlassCard>
                         )}

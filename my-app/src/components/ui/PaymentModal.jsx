@@ -7,6 +7,33 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
     const [processing, setProcessing] = useState(false);
     const [completed, setCompleted] = useState(false);
 
+    // Calculate breakdown
+    // If amount is string, parse it. 
+    // Assuming amount is base price.
+    const {
+        taxableAmount,
+        totalGstAmount,
+        grandTotal,
+        gstRate
+    } = React.useMemo(() => {
+        // If we want to import calculating logic, we can or just inline simple display logic if props passed pre-calc.
+        // But better to re-calculate to be safe using the shared module or duplicate the logic for display.
+        // Let's import the function if possible, but for Speed in this modal we can inline the standard logic 
+        // OR better: Import it. But I didn't import it in the file view above.
+        // I will replicate the simple math here matching the config to ensure speed without adding imports if I can avoid.
+        // Actually, importing is safer.
+        const base = parseFloat(amount || 0);
+        const rate = 18; // Default
+        const tax = base * (rate / 100);
+        return {
+            taxableAmount: base.toFixed(2),
+            totalGstAmount: tax.toFixed(2),
+            gstRate: rate,
+            grandTotal: (base + tax).toFixed(2)
+        };
+    }, [amount]);
+
+
     const handlePayment = () => {
         setProcessing(true);
         // Simulate payment delay
@@ -49,17 +76,17 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
                                     <span className="font-medium">{serviceName}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Base Price</span>
-                                    <span className="font-medium">₹{amount}</span>
+                                    <span className="text-muted-foreground">Taxable Value</span>
+                                    <span className="font-medium">₹{taxableAmount}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Taxes & Fees</span>
-                                    <span className="font-medium">₹50</span>
+                                    <span className="text-muted-foreground">GST ({gstRate}%)</span>
+                                    <span className="font-medium">₹{totalGstAmount}</span>
                                 </div>
                                 <div className="h-px bg-border my-2" />
                                 <div className="flex justify-between text-lg font-bold">
                                     <span>Total Payable</span>
-                                    <span className="text-primary">₹{parseInt(amount) + 50}</span>
+                                    <span className="text-primary">₹{grandTotal}</span>
                                 </div>
                             </div>
 
@@ -95,7 +122,7 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
                                         <Loader2 className="w-5 h-5 animate-spin" /> Processing...
                                     </>
                                 ) : (
-                                    `Pay ₹${parseInt(amount) + 50}`
+                                    `Pay ₹${grandTotal}`
                                 )}
                             </MagneticButton>
                         </motion.div>

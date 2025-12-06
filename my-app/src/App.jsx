@@ -26,6 +26,7 @@ import ResetDatabase from "./pages/ResetDatabase";
 import DealPortalPage from "./pages/DealPortalPage";
 import RequestPortal from "./pages/RequestPortal";
 import OrderPortal from "./pages/OrderPortal";
+import InvoiceView from "./pages/InvoiceView";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <Route path="/deal/:requestId" element={<DealPortalPage />} />
         <Route path="/request/:id" element={<RequestPortal />} />
         <Route path="/order/:orderId" element={<OrderPortal />} />
+        <Route path="/invoice/:invoiceId" element={<InvoiceView />} />
         <Route path="/reset-db-secure" element={<ResetDatabase />} />
 
 

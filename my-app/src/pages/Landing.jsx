@@ -25,7 +25,12 @@ const Navbar = () => (
       <div className="text-xl font-bold tracking-tight hidden md:block">DEProject</div>
     </div>
 
-    <div className="pointer-events-auto">
+    <div className="pointer-events-auto flex items-center gap-4">
+      <RouterLink to="/admin">
+        <button className="px-4 py-2 rounded-lg bg-transparent border border-gray-500/30 text-sm font-medium hover:bg-foreground hover:text-background transition-all duration-300 backdrop-blur-sm">
+          Admin Panel
+        </button>
+      </RouterLink>
       <ThemeToggle />
     </div>
   </motion.nav>
