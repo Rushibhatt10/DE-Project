@@ -100,115 +100,55 @@ const InvoiceView = () => {
                     </div>
                 </div>
 
-                {/* Invoice Paper */}
+                {/* Invoice Paper - Simplified Receipt Style */}
                 <div
                     ref={invoiceRef}
-                    className="bg-white text-black p-8 md:p-12 rounded-lg shadow-xl relative overflow-hidden print:shadow-none print:w-full"
-                    style={{ minHeight: '1123px' }} // A4 approx height in px
+                    className="bg-white text-black p-8 md:p-12 rounded-lg shadow-xl relative overflow-hidden print:shadow-none print:w-full max-w-2xl mx-auto"
                 >
                     {/* Header */}
-                    <div className="flex justify-between items-start mb-12 border-b-2 border-black pb-8">
-                        <div>
-                            <h1 className="text-4xl font-extrabold tracking-tight mb-2 uppercase">Tax Invoice</h1>
-                            <p className="text-sm font-medium opacity-70">Original Recipient</p>
-                        </div>
-                        <div className="text-right">
-                            <h2 className="text-2xl font-bold">{FINANCE_CONFIG.businessDetails.legalName}</h2>
-                            <p className="text-sm max-w-[250px] ml-auto leading-relaxed mt-1 opacity-80">
-                                {FINANCE_CONFIG.businessDetails.address}
-                            </p>
-                            <p className="text-sm mt-1 font-mono">GSTIN: {FINANCE_CONFIG.businessDetails.gstin}</p>
-                        </div>
+                    <div className="text-center mb-10">
+                        <h1 className="text-3xl font-black uppercase tracking-widest mb-2">Receipt</h1>
+                        <p className="text-gray-500 font-medium">{FINANCE_CONFIG.businessDetails.legalName}</p>
                     </div>
 
-                    {/* Invoice Meta */}
-                    <div className="grid grid-cols-2 gap-12 mb-12">
-                        <div>
-                            <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Billed To</p>
-                            <h3 className="text-xl font-bold mb-1">{invoice.userDetails.name}</h3>
-                            <p className="text-sm opacity-80">{invoice.userDetails.phone}</p>
-                            <p className="text-sm opacity-80">{invoice.userDetails.email}</p>
-                            <p className="text-sm mt-2 opacity-80 max-w-[200px]">{invoice.userDetails.address}</p>
+                    {/* Meta Data */}
+                    <div className="border-t-2 border-dashed border-gray-200 py-6 mb-6 space-y-3 text-sm">
+                        <div className="flex justify-between">
+                            <span className="text-gray-500">Date</span>
+                            <span className="font-bold">{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
                         </div>
-                        <div className="text-right space-y-2">
-                            <div className="flex justify-between border-b border-gray-200 pb-1">
-                                <span className="font-medium text-gray-600">Invoice No:</span>
-                                <span className="font-bold font-mono">{invoice.invoiceNumber}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-200 pb-1">
-                                <span className="font-medium text-gray-600">Date:</span>
-                                <span className="font-bold">{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-200 pb-1">
-                                <span className="font-medium text-gray-600">Order ID:</span>
-                                <span className="font-bold font-mono text-xs">{invoice.orderId}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-200 pb-1">
-                                <span className="font-medium text-gray-600">Payment Status:</span>
-                                <span className="font-bold text-green-600 uppercase">Paid</span>
-                            </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-500">Receipt #</span>
+                            <span className="font-bold font-mono">{invoice.invoiceNumber}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-500">Billed To</span>
+                            <span className="font-bold">{invoice.userDetails.name}</span>
                         </div>
                     </div>
 
                     {/* Line Items */}
-                    <table className="w-full mb-8">
-                        <thead>
-                            <tr className="bg-black text-white">
-                                <th className="py-3 px-4 text-left font-bold uppercase text-xs tracking-wider rounded-l-md">Description</th>
-                                <th className="py-3 px-4 text-center font-bold uppercase text-xs tracking-wider">HSN/SAC</th>
-                                <th className="py-3 px-4 text-right font-bold uppercase text-xs tracking-wider rounded-r-md">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 text-sm">
-                            <tr>
-                                <td className="py-4 px-4">
-                                    <p className="font-bold text-base">{invoice.serviceDetails.name}</p>
-                                    <p className="text-gray-500 text-xs mt-1">Service delivered on {new Date(invoice.invoiceDate).toLocaleDateString()}</p>
-                                </td>
-                                <td className="text-center py-4 text-gray-500 font-mono">9993</td>
-                                <td className="text-right py-4 font-medium font-mono">
-                                    {formatCurrency(invoice.financials.taxableAmount)}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    {/* Totals */}
-                    <div className="flex justify-end mb-16">
-                        <div className="w-1/2 space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Taxable Amount</span>
-                                <span className="font-medium">{formatCurrency(invoice.financials.taxableAmount)}</span>
+                    <div className="mb-10">
+                        <div className="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 className="font-bold text-lg">{invoice.serviceDetails.name}</h3>
+                                <p className="text-xs text-gray-500">Full Service</p>
                             </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">CGST ({invoice.financials.cgstRate}%)</span>
-                                <span className="font-medium">{formatCurrency(invoice.financials.cgstAmount)}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">SGST ({invoice.financials.sgstRate}%)</span>
-                                <span className="font-medium">{formatCurrency(invoice.financials.sgstAmount)}</span>
-                            </div>
-                            <div className="border-t-2 border-black pt-3 flex justify-between items-end">
-                                <span className="font-bold text-lg">Grand Total</span>
-                                <span className="font-bold text-2xl">{formatCurrency(invoice.financials.grandTotal)}</span>
-                            </div>
+                            <span className="font-bold text-lg">{formatCurrency(invoice.financials.grandTotal)}</span>
                         </div>
                     </div>
 
+                    {/* Total */}
+                    <div className="border-t-2 border-black pt-6 flex justify-between items-end mb-12">
+                        <span className="font-bold text-xl">Total Paid</span>
+                        <span className="font-black text-3xl">{formatCurrency(invoice.financials.grandTotal)}</span>
+                    </div>
+
                     {/* Footer */}
-                    <div className="absolute bottom-12 left-12 right-12 border-t pt-8 text-xs text-gray-500">
-                        <div className="flex justify-between items-end">
-                            <div className="max-w-md">
-                                <p className="font-bold text-black mb-2 uppercase">Terms & Conditions</p>
-                                <p>1. This is a computer generated invoice and needs no signature.</p>
-                                <p>2. Payments once made are non-refundable.</p>
-                                <p>3. Subject to Indian jurisdiction.</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-bold text-black mb-1">{FINANCE_CONFIG.businessDetails.legalName}</p>
-                                <p>Authorized Signatory</p>
-                            </div>
-                        </div>
+                    <div className="text-center text-xs text-gray-400 space-y-1">
+                        <p className="uppercase tracking-widest font-bold text-gray-300 mb-2">Thank You</p>
+                        <p>For questions, contact {FINANCE_CONFIG.businessDetails.email}</p>
+                        <p>{FINANCE_CONFIG.businessDetails.address}</p>
                     </div>
                 </div>
             </div>
