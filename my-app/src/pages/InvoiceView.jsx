@@ -202,7 +202,7 @@ const InvoiceView = () => {
                                 <p className="font-bold text-black mb-2 uppercase">Terms & Conditions</p>
                                 <p>1. This is a computer generated invoice and needs no signature.</p>
                                 <p>2. Payments once made are non-refundable.</p>
-                                <p>3. Subject to Karnataka jurisdiction.</p>
+                                <p>3. Subject to Indian jurisdiction.</p>
                             </div>
                             <div className="text-right">
                                 <p className="font-bold text-black mb-1">{FINANCE_CONFIG.businessDetails.legalName}</p>

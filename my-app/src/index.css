@@ -4,75 +4,67 @@
 
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        /* White */
-        --foreground: 0 0% 0%;
-        /* Black */
+        /* Light Mode: Clean White */
+        --background: 0 0% 100%;       /* #ffffff */
+        --foreground: 0 0% 0%;         /* #000000 */
 
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 0%;
+        --card: 0 0% 100%;             /* #ffffff */
+        --card-foreground: 0 0% 0%;    /* #000000 */
 
         --popover: 0 0% 100%;
         --popover-foreground: 0 0% 0%;
 
-        --primary: 0 0% 0%;
-        /* Black action */
-        --primary-foreground: 0 0% 100%;
-        /* White text */
+        --primary: 0 0% 0%;            /* Black button */
+        --primary-foreground: 0 0% 100%; /* White text */
 
-        --secondary: 0 0% 96%;
-        /* Light Gray */
+        --secondary: 0 0% 96%;         /* Light Gray #f3f4f6 */
         --secondary-foreground: 0 0% 9%;
 
         --muted: 0 0% 96%;
         --muted-foreground: 0 0% 45%;
 
-        --accent: 0 0% 96%;
-        --accent-foreground: 0 0% 9%;
+        --accent: 189 94% 43%;         /* Cyan-500 #06b6d4 */
+        --accent-foreground: 0 0% 100%;
 
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 0 0% 98%;
 
-        --border: 0 0% 90%;
+        --border: 0 0% 90%;            /* Light gray border */
         --input: 0 0% 90%;
-        --ring: 0 0% 0%;
+        --ring: 189 94% 43%;           /* Cyan Ring */
 
         --radius: 0.5rem;
     }
 
     .dark {
-        --background: 0 0% 5%;
-        /* Dark Gray #0d0d0d */
-        --foreground: 0 0% 100%;
-        /* White */
+        /* Dark Mode: Pure Black */
+        --background: 0 0% 0%;         /* #000000 PURE BLACK */
+        --foreground: 0 0% 100%;       /* #ffffff */
 
-        --card: 0 0% 10%;
-        /* Slightly lighter gray */
+        --card: 0 0% 3%;               /* #080808 Near Black */
         --card-foreground: 0 0% 100%;
 
-        --popover: 0 0% 10%;
+        --popover: 0 0% 3%;
         --popover-foreground: 0 0% 100%;
 
-        --primary: 0 0% 100%;
-        /* White action */
-        --primary-foreground: 0 0% 0%;
-        /* Black text */
+        --primary: 0 0% 100%;          /* White button */
+        --primary-foreground: 0 0% 0%; /* Black text */
 
-        --secondary: 0 0% 15%;
+        --secondary: 0 0% 10%;         /* Dark Gray #1a1a1a */
         --secondary-foreground: 0 0% 98%;
 
-        --muted: 0 0% 15%;
-        --muted-foreground: 0 0% 65%;
+        --muted: 0 0% 10%;
+        --muted-foreground: 0 0% 60%;
 
-        --accent: 0 0% 15%;
-        --accent-foreground: 0 0% 98%;
+        --accent: 188 86% 53%;         /* Cyan-400 #22d3ee */
+        --accent-foreground: 0 0% 0%;
 
         --destructive: 0 62.8% 30.6%;
         --destructive-foreground: 0 0% 98%;
 
-        --border: 0 0% 20%;
-        --input: 0 0% 20%;
-        --ring: 0 0% 83.1%;
+        --border: 0 0% 15%;            /* Subtle dark border */
+        --input: 0 0% 15%;
+        --ring: 188 86% 53%;           /* Cyan Ring */
     }
 
     body {

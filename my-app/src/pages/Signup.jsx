@@ -125,23 +125,21 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden px-4 font-sans transition-colors duration-300">
-      {/* Background Elements */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0 pointer-events-none mix-blend-overlay"></div>
-      <FloatingElement className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px]" />
-      <FloatingElement delay={2} className="absolute bottom-[-10%] right-[-5%] w-[600px] h-[600px] bg-secondary/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden px-4 font-sans transition-colors duration-300 selection:bg-accent selection:text-accent-foreground">
+      {/* Subtle Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
 
       <Link to="/" className="absolute top-8 left-8 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 z-20">
         <ArrowLeft className="w-5 h-5" /> Back to Home
       </Link>
 
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
         className="w-full max-w-md relative z-10"
       >
-        <GlassCard className="p-8 md:p-10 border-border bg-card/60 backdrop-blur-xl shadow-2xl">
+        <div className="p-8 md:p-10 border border-border bg-card shadow-2xl rounded-2xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-foreground mb-2 tracking-tight">
               Create Account
@@ -297,7 +295,7 @@ function Signup() {
               Sign in
             </Link>
           </p>
-        </GlassCard>
+        </div>
       </motion.div>
     </div>
   );
