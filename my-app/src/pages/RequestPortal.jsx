@@ -139,8 +139,12 @@ const RequestPortal = () => {
   const currentStepIndex = steps.indexOf(requestData.status) === -1 ? 0 : steps.indexOf(requestData.status);
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-background text-foreground font-sans py-8 px-4 relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+      <div className="max-w-4xl mx-auto relative z-10">
         <button
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
@@ -157,9 +161,9 @@ const RequestPortal = () => {
                   <h1 className="text-2xl font-bold mb-1">{requestData.serviceName}</h1>
                   <p className="text-sm text-muted-foreground">Order ID: #{id.slice(0, 8).toUpperCase()}</p>
                 </div>
-                <div className={`px-3 py-1 rounded-full text-sm font-bold ${requestData.status === "Completed" ? "bg-green-500/10 text-green-600" :
-                  requestData.status === "Cancelled" ? "bg-red-500/10 text-red-600" :
-                    "bg-yellow-500/10 text-yellow-600"
+                <div className={`px-3 py-1 rounded-full text-sm font-bold border ${requestData.status === "Completed" ? "bg-green-500/10 text-green-500 border-green-500/20" :
+                  requestData.status === "Cancelled" ? "bg-red-500/10 text-red-500 border-red-500/20" :
+                    "bg-cyan-500/10 text-cyan-500 border-cyan-500/20 shadow-[0_0_10px_rgba(34,211,238,0.2)]"
                   }`}>
                   {requestData.status}
                 </div>
@@ -169,15 +173,15 @@ const RequestPortal = () => {
               <div className="mb-8 relative">
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-secondary rounded-full -z-10" />
                 <div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary rounded-full -z-10 transition-all duration-500"
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full -z-10 transition-all duration-500 shadow-[0_0_10px_rgba(34,211,238,0.4)]"
                   style={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
                 />
                 <div className="flex justify-between">
                   {steps.map((step, idx) => (
                     <div key={step} className="flex flex-col items-center gap-2">
-                      <div className={`w-4 h-4 rounded-full border-2 transition-all ${idx <= currentStepIndex ? "bg-primary border-primary" : "bg-background border-muted-foreground"
+                      <div className={`w-4 h-4 rounded-full border-2 transition-all ${idx <= currentStepIndex ? "bg-cyan-500 border-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.6)] scale-110" : "bg-card border-border"
                         }`} />
-                      <span className={`text-xs font-medium ${idx <= currentStepIndex ? "text-foreground" : "text-muted-foreground"
+                      <span className={`text-xs font-bold uppercase tracking-wider ${idx <= currentStepIndex ? "text-foreground" : "text-muted-foreground"
                         }`}>{step}</span>
                     </div>
                   ))}
@@ -226,7 +230,7 @@ const RequestPortal = () => {
                   {requestData.status === "Pending" && (
                     <MagneticButton
                       onClick={() => handleStatusUpdate("Accepted")}
-                      className="flex-1 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700"
+                      className="flex-1 py-3 bg-cyan-600 text-black font-bold rounded-xl hover:bg-cyan-500 shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all"
                     >
                       Accept Request
                     </MagneticButton>
@@ -234,7 +238,7 @@ const RequestPortal = () => {
                   {requestData.status === "Accepted" && (
                     <MagneticButton
                       onClick={() => handleStatusUpdate("On the Way")}
-                      className="flex-1 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700"
+                      className="flex-1 py-3 bg-cyan-600 text-black font-bold rounded-xl hover:bg-cyan-500 shadow-[0_0_20px_rgba(34,211,238,0.3)] transition-all"
                     >
                       Mark On the Way
                     </MagneticButton>
@@ -242,7 +246,7 @@ const RequestPortal = () => {
                   {requestData.status === "On the Way" && (
                     <MagneticButton
                       onClick={() => handleStatusUpdate("Completed")}
-                      className="flex-1 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90"
+                      className="flex-1 py-3 bg-foreground text-background font-bold rounded-xl hover:bg-foreground/90 transition-all"
                     >
                       Mark Completed
                     </MagneticButton>
@@ -312,7 +316,7 @@ const RequestPortal = () => {
               {isUser && requestData.status === "Completed" && requestData.paymentStatus !== "Paid" ? (
                 <MagneticButton
                   onClick={() => setShowPayment(true)}
-                  className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-foreground text-background dark:bg-cyan-500 dark:text-black font-bold rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 transition-all"
                 >
                   <CreditCard className="w-4 h-4" /> Pay Now
                 </MagneticButton>

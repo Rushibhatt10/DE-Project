@@ -158,9 +158,9 @@ const ProviderDashboard = () => {
   if (verificationStatus === "PENDING") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <GlassCard className="max-w-md w-full p-8 text-center border-yellow-500/20 bg-yellow-500/5">
-          <div className="w-20 h-20 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Clock className="w-10 h-10 text-yellow-500" />
+        <GlassCard className="max-w-md w-full p-8 text-center border-border bg-card shadow-2xl">
+          <div className="w-20 h-20 bg-secondary/50 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+            <Clock className="w-10 h-10 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold mb-2">Verification Pending</h2>
           <p className="text-muted-foreground mb-6">
@@ -200,7 +200,10 @@ const ProviderDashboard = () => {
 
   // --- FORM STATE (NONE) ---
   return (
-    <div className="min-h-screen bg-background text-foreground relative overflow-hidden font-sans flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background text-foreground relative overflow-hidden font-sans flex items-center justify-center p-6 selection:bg-cyan-500/20">
+      {/* Background Ambience */}
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0 pointer-events-none mix-blend-overlay"></div>
 
       <motion.div
@@ -210,10 +213,10 @@ const ProviderDashboard = () => {
       >
         <GlassCard className="p-8 md:p-12 border-border bg-card/60 backdrop-blur-xl shadow-2xl">
           <div className="text-center mb-10">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
-              <ShieldCheck className="w-8 h-8" />
+            <div className="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+              <ShieldCheck className="w-10 h-10 text-cyan-500" />
             </div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Provider Verification</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-2 tracking-tight">Provider Verification</h1>
             <p className="text-muted-foreground">Complete your profile to start offering services.</p>
           </div>
 
@@ -322,7 +325,7 @@ const ProviderDashboard = () => {
             <MagneticButton
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl transition-all disabled:opacity-50 shadow-lg flex items-center justify-center gap-2"
+              className="w-full py-4 bg-foreground text-background dark:bg-cyan-500 dark:text-black font-bold rounded-xl transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:shadow-[0_0_30px_rgba(34,211,238,0.5)] hover:scale-[1.01] flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

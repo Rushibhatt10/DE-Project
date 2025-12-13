@@ -179,18 +179,18 @@ const ProviderAdmin = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Total Services", value: services.length, icon: <PackageCheck className="w-5 h-5 text-blue-500" /> },
-          { label: "Pending Requests", value: requests.filter(r => r.status === "Pending").length, icon: <Clock className="w-5 h-5 text-yellow-500" /> },
+          { label: "Total Services", value: services.length, icon: <PackageCheck className="w-5 h-5 text-cyan-500" /> },
+          { label: "Pending Requests", value: requests.filter(r => r.status === "Pending").length, icon: <Clock className="w-5 h-5 text-purple-500" /> },
           { label: "Completed Jobs", value: requests.filter(r => r.status === "Completed").length, icon: <CheckCircle className="w-5 h-5 text-green-500" /> },
-          { label: "Total Earnings", value: `₹${requests.filter(r => r.status === "Completed").reduce((acc, curr) => acc + (parseInt(curr.price) || 0), 0)}`, icon: <User className="w-5 h-5 text-purple-500" /> },
-          { label: "Average Rating", value: averageRating, icon: <Star className="w-5 h-5 text-orange-500 fill-orange-500" /> },
+          { label: "Total Earnings", value: `₹${requests.filter(r => r.status === "Completed").reduce((acc, curr) => acc + (parseInt(curr.price) || 0), 0)}`, icon: <User className="w-5 h-5 text-blue-500" /> },
+          { label: "Average Rating", value: averageRating, icon: <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" /> },
         ].map((stat, i) => (
-          <Card key={i} className="p-6 flex items-center justify-between">
+          <Card key={i} className="p-6 flex items-center justify-between border-border/50 bg-card/50 hover:border-cyan-500/30 transition-colors">
             <div>
-              <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
-              <h3 className="text-2xl font-bold text-foreground mt-1">{stat.value}</h3>
+              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wide">{stat.label}</p>
+              <h3 className="text-3xl font-bold text-foreground mt-2">{stat.value}</h3>
             </div>
-            <div className="p-3 bg-secondary rounded-full">{stat.icon}</div>
+            <div className="p-4 bg-secondary/50 rounded-2xl">{stat.icon}</div>
           </Card>
         ))}
       </div>
@@ -253,10 +253,10 @@ const ProviderAdmin = () => {
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-3">
                   <h3 className="font-bold text-lg">{req.serviceName}</h3>
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${req.status === "Pending" ? "bg-yellow-100 text-yellow-700" :
-                    req.status === "Accepted" ? "bg-green-100 text-green-700" :
-                      req.status === "Rejected" ? "bg-red-100 text-red-700" :
-                        "bg-blue-100 text-blue-700"
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${req.status === "Pending" ? "bg-cyan-500/10 text-cyan-500 border border-cyan-500/20" :
+                    req.status === "Accepted" ? "bg-green-500/10 text-green-500" :
+                      req.status === "Rejected" ? "bg-red-500/10 text-red-500" :
+                        "bg-blue-500/10 text-blue-500"
                     }`}>
                     {req.status}
                   </span>
@@ -302,7 +302,7 @@ const ProviderAdmin = () => {
                 {(req.status !== "Pending" && req.status !== "Rejected") && (
                   <MagneticButton
                     onClick={() => navigate(`/order/${req.id}`)}
-                    className="flex-1 md:flex-none px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 shadow-sm"
+                    className="flex-1 md:flex-none px-6 py-2 bg-foreground text-background dark:bg-cyan-500 dark:text-black font-bold rounded-lg hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] shadow-sm transition-all"
                   >
                     Open Order Portal
                   </MagneticButton>
@@ -364,34 +364,34 @@ const ProviderAdmin = () => {
     <div className="min-h-screen bg-background text-foreground font-sans flex">
       {/* Sidebar */}
       <aside className="w-64 border-r border-border bg-card hidden md:flex flex-col fixed h-full z-20">
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b border-border/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center font-bold text-primary-foreground text-xl">P</div>
-            <span className="font-bold text-lg">Provider Panel</span>
+            <div className="w-10 h-10 bg-cyan-500 text-black rounded-xl flex items-center justify-center font-bold text-xl shadow-[0_0_15px_rgba(34,211,238,0.4)]">P</div>
+            <span className="font-bold text-lg tracking-wide">Provider Panel</span>
           </div>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
           <button
             onClick={() => setActiveTab("dashboard")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "dashboard" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === "dashboard" ? "bg-cyan-500 text-black shadow-[0_0_15px_rgba(34,211,238,0.3)]" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
           >
             <LayoutDashboard className="w-5 h-5" /> Dashboard
           </button>
           <button
             onClick={() => setActiveTab("requests")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "requests" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === "requests" ? "bg-cyan-500 text-black shadow-[0_0_15px_rgba(34,211,238,0.3)]" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
           >
             <Mail className="w-5 h-5" /> Requests
             {requests.filter(r => r.status === "Pending").length > 0 && (
-              <span className="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">
+              <span className="ml-auto bg-cyan-600 text-black text-[10px] font-black px-2 py-0.5 rounded-full">
                 {requests.filter(r => r.status === "Pending").length}
               </span>
             )}
           </button>
           <button
             onClick={() => setActiveTab("services")}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "services" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-secondary"}`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${activeTab === "services" ? "bg-cyan-500 text-black shadow-[0_0_15px_rgba(34,211,238,0.3)]" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
           >
             <List className="w-5 h-5" /> My Services
           </button>

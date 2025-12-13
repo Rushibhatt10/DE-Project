@@ -44,13 +44,13 @@ const PASSWORD = "Rushzzz@10";
 const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${active
-      ? "bg-white text-black font-bold shadow-lg"
-      : "text-gray-400 hover:bg-white/10 hover:text-white"
+    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${active
+      ? "bg-cyan-500 text-black font-bold shadow-[0_0_15px_rgba(34,211,238,0.4)]"
+      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
       }`}
   >
-    <Icon className={`w-5 h-5 ${active ? "text-black" : "group-hover:text-white"}`} />
-    <span>{label}</span>
+    <Icon className={`w-5 h-5 ${active ? "text-black" : "group-hover:text-cyan-400 transition-colors"}`} />
+    <span className="relative z-10">{label}</span>
     {active && <ChevronRight className="w-4 h-4 ml-auto" />}
   </button>
 );
@@ -59,46 +59,46 @@ const StatCard = ({ title, value, icon: Icon, trend, subtext }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-[#111] border border-[#222] p-6 rounded-2xl hover:border-[#333] transition-colors group"
+    className="bg-card border border-border/50 p-6 rounded-2xl hover:border-cyan-500/30 transition-all duration-300 group hover:shadow-[0_0_20px_rgba(34,211,238,0.1)]"
   >
     <div className="flex justify-between items-start mb-4">
-      <div className="p-3 bg-[#1a1a1a] rounded-xl group-hover:bg-[#222] transition-colors">
-        <Icon className="w-6 h-6 text-white" />
+      <div className="p-3 bg-secondary/50 rounded-xl group-hover:bg-cyan-500/10 group-hover:text-cyan-400 transition-colors">
+        <Icon className="w-6 h-6 text-muted-foreground group-hover:text-cyan-400" />
       </div>
       {trend && (
-        <span className={`text-xs font-medium px-2 py-1 rounded-full ${trend > 0 ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
+        <span className={`text-xs font-bold px-2 py-1 rounded-full ${trend > 0 ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
           {trend > 0 ? '+' : ''}{trend}%
         </span>
       )}
     </div>
-    <h3 className="text-3xl font-bold text-white mb-1">{value}</h3>
-    <p className="text-gray-400 text-sm">{title}</p>
-    {subtext && <p className="text-xs text-gray-500 mt-2">{subtext}</p>}
+    <h3 className="text-3xl font-bold text-foreground mb-1 tracking-tight">{value}</h3>
+    <p className="text-muted-foreground text-sm font-medium uppercase tracking-wide">{title}</p>
+    {subtext && <p className="text-xs text-cyan-500/80 mt-2 font-medium">{subtext}</p>}
   </motion.div>
 );
 
 const ActivityItem = ({ type, title, subtitle, time }) => {
   const getIcon = () => {
     switch (type) {
-      case 'user': return <Users className="w-4 h-4 text-blue-400" />;
+      case 'user': return <Users className="w-4 h-4 text-cyan-400" />;
       case 'provider': return <Briefcase className="w-4 h-4 text-purple-400" />;
       case 'service': return <ClipboardList className="w-4 h-4 text-green-400" />;
       case 'request': return <Activity className="w-4 h-4 text-orange-400" />;
       case 'verification': return <ShieldCheck className="w-4 h-4 text-yellow-400" />;
-      default: return <Star className="w-4 h-4 text-yellow-400" />;
+      default: return <Star className="w-4 h-4 text-cyan-400" />;
     }
   };
 
   return (
-    <div className="flex items-start gap-4 p-4 hover:bg-[#1a1a1a] rounded-xl transition-colors border-b border-[#222] last:border-0">
-      <div className="mt-1 p-2 bg-[#222] rounded-full">
+    <div className="flex items-start gap-4 p-4 hover:bg-secondary/30 rounded-xl transition-colors border-b border-border/50 last:border-0 group">
+      <div className="mt-1 p-2 bg-secondary rounded-full group-hover:bg-cyan-500/10 transition-colors">
         {getIcon()}
       </div>
       <div className="flex-1">
-        <h4 className="text-sm font-bold text-white">{title}</h4>
-        <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>
+        <h4 className="text-sm font-bold text-foreground group-hover:text-cyan-400 transition-colors">{title}</h4>
+        <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
       </div>
-      <span className="text-xs text-gray-500 whitespace-nowrap">{time}</span>
+      <span className="text-xs text-muted-foreground whitespace-nowrap font-mono">{time}</span>
     </div>
   );
 };
@@ -107,20 +107,20 @@ const DataTable = ({ headers, data, renderRow }) => (
   <div className="overflow-x-auto">
     <table className="w-full text-left border-collapse">
       <thead>
-        <tr className="border-b border-[#222]">
+        <tr className="border-b border-white/10 bg-secondary/20">
           {headers.map((h, i) => (
-            <th key={i} className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+            <th key={i} className="p-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
               {h}
             </th>
           ))}
         </tr>
       </thead>
-      <tbody className="divide-y divide-[#222]">
+      <tbody className="divide-y divide-border/30">
         {data.length > 0 ? (
           data.map((item, i) => renderRow(item, i))
         ) : (
           <tr>
-            <td colSpan={headers.length} className="p-8 text-center text-gray-500">
+            <td colSpan={headers.length} className="p-8 text-center text-muted-foreground italic">
               No data available
             </td>
           </tr>
@@ -146,37 +146,40 @@ const VerificationModal = ({ provider, onClose, onApprove, onReject }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-[#0a0a0a] border border-[#333] rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl"
+        className="bg-card border border-border/50 rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative"
       >
+        {/* Background Gradients */}
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-cyan-500/5 rounded-full blur-[100px] pointer-events-none" />
+
         {/* Header */}
-        <div className="p-6 border-b border-[#222] flex justify-between items-center bg-[#111]">
+        <div className="p-6 border-b border-border flex justify-between items-center bg-card/50 backdrop-blur-md relative z-10">
           <div>
-            <h2 className="text-xl font-bold flex items-center gap-2 text-white">
-              <ShieldCheck className="w-6 h-6 text-yellow-500" />
+            <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
+              <ShieldCheck className="w-6 h-6 text-cyan-500" />
               Verification Request
             </h2>
-            <p className="text-sm text-gray-400 mt-1">Review provider details and document</p>
+            <p className="text-sm text-muted-foreground mt-1">Review provider details and document</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-[#222] rounded-full transition-colors text-gray-400 hover:text-white"
+            className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+        <div className="flex-1 overflow-y-auto p-8 space-y-8 relative z-10">
           {/* Status Banner */}
           <div className="flex items-center gap-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
             <AlertCircle className="w-6 h-6 text-yellow-500 shrink-0" />
             <div>
               <h4 className="font-bold text-yellow-500">Pending Verification</h4>
-              <p className="text-sm text-yellow-200/70">This provider is waiting for your approval to start accepting services.</p>
+              <p className="text-sm text-yellow-500/70">This provider is waiting for your approval to start accepting services.</p>
             </div>
           </div>
 
@@ -184,28 +187,28 @@ const VerificationModal = ({ provider, onClose, onApprove, onReject }) => {
             {/* Left Column: Details */}
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Provider Details</h3>
+                <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Provider Details</h3>
                 <div className="space-y-4">
-                  <div className="bg-[#111] p-4 rounded-xl border border-[#222]">
-                    <label className="text-xs text-gray-500 block mb-1">Full Name</label>
-                    <p className="font-medium text-lg text-white">{provider.fullName}</p>
+                  <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
+                    <label className="text-xs text-muted-foreground block mb-1">Full Name</label>
+                    <p className="font-bold text-lg text-foreground">{provider.fullName}</p>
                   </div>
-                  <div className="bg-[#111] p-4 rounded-xl border border-[#222]">
-                    <label className="text-xs text-gray-500 block mb-1">Contact Information</label>
-                    <p className="font-medium text-white">{provider.email}</p>
-                    <p className="text-sm text-gray-400 mt-1">{provider.phone}</p>
+                  <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
+                    <label className="text-xs text-muted-foreground block mb-1">Contact Information</label>
+                    <p className="font-medium text-foreground">{provider.email}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{provider.phone}</p>
                   </div>
-                  <div className="bg-[#111] p-4 rounded-xl border border-[#222]">
-                    <label className="text-xs text-gray-500 block mb-1">Professional Info</label>
+                  <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
+                    <label className="text-xs text-muted-foreground block mb-1">Professional Info</label>
                     <div className="flex justify-between items-center">
-                      <span className="font-medium text-white">{provider.serviceType}</span>
-                      <span className="text-xs bg-[#222] px-2 py-1 rounded text-gray-300">{provider.yearsOfExperience} Years Exp.</span>
+                      <span className="font-medium text-foreground">{provider.serviceType}</span>
+                      <span className="text-xs bg-secondary px-2 py-1 rounded text-foreground font-medium">{provider.yearsOfExperience} Years Exp.</span>
                     </div>
                   </div>
-                  <div className="bg-[#111] p-4 rounded-xl border border-[#222]">
-                    <label className="text-xs text-gray-500 block mb-1">Location</label>
-                    <p className="font-medium text-white">{provider.address}</p>
-                    <p className="text-sm text-gray-400 mt-1">{provider.city} - {provider.pincode}</p>
+                  <div className="bg-secondary/30 p-4 rounded-xl border border-border/50">
+                    <label className="text-xs text-muted-foreground block mb-1">Location</label>
+                    <p className="font-medium text-foreground">{provider.address}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{provider.city} - {provider.pincode}</p>
                   </div>
                 </div>
               </div>
@@ -213,15 +216,15 @@ const VerificationModal = ({ provider, onClose, onApprove, onReject }) => {
 
             {/* Right Column: Document */}
             <div className="space-y-6">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Identity Proof</h3>
-              <div className="bg-[#111] border border-[#222] rounded-xl overflow-hidden group relative">
-                <div className="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10 z-10">
+              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-3">Identity Proof</h3>
+              <div className="bg-secondary/20 border border-border/50 rounded-xl overflow-hidden group relative">
+                <div className="absolute top-4 left-4 bg-black/80 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-white border border-white/10 z-10">
                   {provider.govIdType}
                 </div>
                 <img
                   src={provider.idImageURL}
                   alt="ID Proof"
-                  className="w-full h-auto object-contain min-h-[300px] bg-[#050505]"
+                  className="w-full h-auto object-contain min-h-[300px] bg-black/50"
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <a
@@ -252,12 +255,12 @@ const VerificationModal = ({ provider, onClose, onApprove, onReject }) => {
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     placeholder="Please explain why this verification is being rejected..."
-                    className="w-full bg-[#0a0a0a] border border-red-500/20 rounded-lg p-4 text-white focus:outline-none focus:border-red-500/50 min-h-[100px]"
+                    className="w-full bg-secondary/50 border border-red-500/20 rounded-lg p-4 text-foreground focus:outline-none focus:border-red-500/50 min-h-[100px]"
                   />
                   <div className="flex gap-3 mt-4 justify-end">
                     <button
                       onClick={() => setIsRejecting(false)}
-                      className="px-4 py-2 text-gray-400 hover:text-white text-sm font-medium"
+                      className="px-4 py-2 text-muted-foreground hover:text-foreground text-sm font-medium"
                     >
                       Cancel
                     </button>
@@ -276,16 +279,16 @@ const VerificationModal = ({ provider, onClose, onApprove, onReject }) => {
 
         {/* Footer Actions */}
         {!isRejecting && (
-          <div className="p-6 border-t border-[#222] bg-[#111] flex gap-4 justify-end">
+          <div className="p-6 border-t border-border bg-card/50 backdrop-blur-md flex gap-4 justify-end relative z-10">
             <button
               onClick={() => setIsRejecting(true)}
-              className="px-6 py-3 bg-[#222] text-red-400 font-bold rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20"
+              className="px-6 py-3 bg-secondary text-red-400 font-bold rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all border border-transparent hover:border-red-500/20"
             >
               Reject Request
             </button>
             <button
               onClick={() => onApprove(provider.id)}
-              className="px-8 py-3 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
+              className="px-8 py-3 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] hover:-translate-y-0.5 flex items-center gap-2"
             >
               <CheckCircle2 className="w-5 h-5" />
               Approve Provider
@@ -473,18 +476,22 @@ const MainAdminPanel = () => {
 
   if (!accessGranted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white font-sans">
+      <div className="min-h-screen flex items-center justify-center bg-black text-foreground font-sans relative overflow-hidden">
+        {/* Background Ambience */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-md p-8 bg-[#111] border border-[#222] rounded-2xl shadow-2xl"
+          className="w-full max-w-md p-8 bg-card border border-border/50 rounded-2xl shadow-2xl relative z-10 backdrop-blur-sm"
         >
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
-              <Settings className="w-8 h-8 text-black" />
+            <div className="w-20 h-20 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+              <Settings className="w-10 h-10 text-cyan-500" />
             </div>
-            <h1 className="text-2xl font-bold">Admin Portal</h1>
-            <p className="text-gray-400 mt-2">Restricted Access Only</p>
+            <h1 className="text-3xl font-bold tracking-tight">Admin Portal</h1>
+            <p className="text-muted-foreground mt-2">Restricted Access Only</p>
           </div>
           <form onSubmit={handleLogin} className="space-y-4">
             <input
@@ -492,10 +499,10 @@ const MainAdminPanel = () => {
               value={enteredPassword}
               onChange={(e) => setEnteredPassword(e.target.value)}
               placeholder="Enter Access Key"
-              className="w-full p-4 bg-[#0a0a0a] border border-[#333] rounded-xl text-white focus:border-white focus:outline-none transition-colors"
+              className="w-full p-4 bg-secondary/50 border border-border/50 rounded-xl text-foreground focus:border-cyan-500 focus:outline-none transition-all placeholder:text-muted-foreground/50"
               autoFocus
             />
-            <button type="submit" className="w-full py-4 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-colors">
+            <button type="submit" className="w-full py-4 bg-cyan-500 text-black font-bold rounded-xl hover:bg-cyan-400 transition-all shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:shadow-[0_0_30px_rgba(34,211,238,0.6)]">
               Enter Dashboard
             </button>
           </form>
@@ -525,44 +532,44 @@ const MainAdminPanel = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Main Chart Area */}
-              <div className="lg:col-span-2 bg-[#111] border border-[#222] rounded-2xl p-6">
-                <h3 className="text-xl font-bold mb-6">Platform Overview</h3>
+              <div className="lg:col-span-2 bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold mb-6 tracking-tight">Platform Overview</h3>
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="p-4 bg-[#1a1a1a] rounded-xl border border-[#222]">
-                    <p className="text-gray-400 text-sm mb-1">Pending Requests</p>
+                  <div className="p-4 bg-secondary/30 rounded-xl border border-border/50">
+                    <p className="text-muted-foreground text-sm mb-1 uppercase tracking-wider font-medium">Pending Requests</p>
                     <p className="text-2xl font-bold text-yellow-500">{stats.pendingRequests}</p>
                   </div>
-                  <div className="p-4 bg-[#1a1a1a] rounded-xl border border-[#222]">
-                    <p className="text-gray-400 text-sm mb-1">Completed Requests</p>
+                  <div className="p-4 bg-secondary/30 rounded-xl border border-border/50">
+                    <p className="text-muted-foreground text-sm mb-1 uppercase tracking-wider font-medium">Completed Requests</p>
                     <p className="text-2xl font-bold text-green-500">{stats.completedRequests}</p>
                   </div>
                 </div>
                 {/* Simple Bar Chart Visualization */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm font-medium">
                       <span>Service Completion Rate</span>
-                      <span>85%</span>
+                      <span className="text-cyan-500">85%</span>
                     </div>
-                    <div className="h-2 bg-[#222] rounded-full overflow-hidden">
-                      <div className="h-full bg-white w-[85%] rounded-full" />
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <div className="h-full bg-cyan-500 w-[85%] rounded-full shadow-[0_0_10px_rgba(34,211,238,0.4)]" />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm font-medium">
                       <span>User Satisfaction</span>
-                      <span>92%</span>
+                      <span className="text-cyan-500">92%</span>
                     </div>
-                    <div className="h-2 bg-[#222] rounded-full overflow-hidden">
-                      <div className="h-full bg-white w-[92%] rounded-full" />
+                    <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                      <div className="h-full bg-cyan-500 w-[92%] rounded-full shadow-[0_0_10px_rgba(34,211,238,0.4)]" />
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Recent Activity */}
-              <div className="bg-[#111] border border-[#222] rounded-2xl p-6">
-                <h3 className="text-xl font-bold mb-6">Recent Activity</h3>
+              <div className="bg-card border border-border/50 rounded-2xl p-6 shadow-sm">
+                <h3 className="text-xl font-bold mb-6 tracking-tight">Recent Activity</h3>
                 <div className="space-y-2">
                   {recentActivity.map((item, i) => (
                     <ActivityItem key={i} {...item} />
@@ -575,13 +582,13 @@ const MainAdminPanel = () => {
 
       case "verifications":
         return (
-          <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-            <div className="p-6 border-b border-[#222] flex justify-between items-center">
+          <div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+            <div className="p-6 border-b border-border/50 flex justify-between items-center bg-secondary/10">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 <ShieldCheck className="w-6 h-6 text-yellow-500" />
                 Pending Verifications
               </h2>
-              <span className="bg-yellow-500/10 text-yellow-500 px-3 py-1 rounded-full text-sm font-bold">
+              <span className="bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 px-3 py-1 rounded-full text-sm font-bold">
                 {verificationRequests.length} Pending
               </span>
             </div>
@@ -773,18 +780,18 @@ const MainAdminPanel = () => {
                 <h3 className="text-gray-400 text-sm mb-2">Total GST Collected</h3>
                 <p className="text-3xl font-bold text-blue-400">₹{stats.gstCollected.toFixed(2)}</p>
               </div>
-              <div className="bg-[#111] p-6 rounded-2xl border border-[#222]">
-                <h3 className="text-gray-400 text-sm mb-2">Platform Earning</h3>
+              <div className="bg-card p-6 rounded-2xl border border-border/50 shadow-sm">
+                <h3 className="text-muted-foreground text-sm mb-2 font-medium uppercase tracking-wide">Platform Earning</h3>
                 <p className="text-3xl font-bold text-green-500">₹{stats.platformRevenue.toFixed(2)}</p>
               </div>
             </div>
 
-            <div className="bg-[#111] border border-[#222] rounded-2xl overflow-hidden">
-              <div className="p-6 border-b border-[#222] flex justify-between items-center">
+            <div className="bg-card border border-border/50 rounded-2xl overflow-hidden shadow-sm">
+              <div className="p-6 border-b border-border/50 flex justify-between items-center bg-secondary/10">
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <Banknote className="w-5 h-5 text-green-500" /> Revenue & Invoices
                 </h2>
-                <button className="px-4 py-2 bg-white text-black text-xs font-bold rounded-lg hover:bg-gray-200">
+                <button className="px-4 py-2 bg-cyan-500 text-black text-xs font-bold rounded-lg hover:bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.3)] transition-all">
                   Download Report
                 </button>
               </div>

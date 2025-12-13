@@ -86,7 +86,7 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
                                 <div className="h-px bg-border my-2" />
                                 <div className="flex justify-between text-lg font-bold">
                                     <span>Total Payable</span>
-                                    <span className="text-primary">₹{grandTotal}</span>
+                                    <span className="text-cyan-500 shadow-cyan-500/20 drop-shadow-lg">₹{grandTotal}</span>
                                 </div>
                             </div>
 
@@ -115,7 +115,7 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
                             <MagneticButton
                                 onClick={handlePayment}
                                 disabled={processing}
-                                className="w-full py-3.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-xl disabled:opacity-70 flex items-center justify-center gap-2"
+                                className="w-full py-3.5 bg-foreground text-background dark:bg-cyan-500 dark:text-black font-bold rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.4)] hover:shadow-[0_0_25px_rgba(34,211,238,0.6)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 transition-all"
                             >
                                 {processing ? (
                                     <>

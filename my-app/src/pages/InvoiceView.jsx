@@ -79,7 +79,7 @@ const InvoiceView = () => {
     if (!invoice) return null;
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-zinc-900 p-4 md:p-8 font-sans">
+        <div className="min-h-screen bg-background text-foreground p-4 md:p-8 font-sans">
             <div className="max-w-4xl mx-auto">
 
                 {/* Header Actions */}
@@ -93,7 +93,7 @@ const InvoiceView = () => {
                     <div className="flex gap-4">
                         <MagneticButton
                             onClick={handleDownloadPdf}
-                            className="flex items-center gap-2 px-6 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg"
+                            className="flex items-center gap-2 px-6 py-2 bg-cyan-500 text-black font-bold rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.3)] hover:bg-cyan-400 hover:shadow-[0_0_25px_rgba(34,211,238,0.5)] transition-all"
                         >
                             <Download className="w-4 h-4" /> Download PDF
                         </MagneticButton>
