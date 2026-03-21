@@ -36,6 +36,7 @@ import {
   Download
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { getVisitingCharge } from "../utils/pricing";
 
 const PASSWORD = "Rushzzz@10";
 
@@ -702,8 +703,8 @@ const MainAdminPanel = () => {
                 <p className="text-3xl font-bold">{[...new Set(services.map(s => s.category))].length}</p>
               </div>
               <div className="bg-[#111] p-6 rounded-2xl border border-[#222]">
-                <h3 className="text-gray-400 text-sm mb-2">Avg Price</h3>
-                <p className="text-3xl font-bold">₹{Math.round(services.reduce((acc, s) => acc + Number(s.price || 0), 0) / (services.length || 1))}</p>
+                <h3 className="text-gray-400 text-sm mb-2">Avg Visiting Charge</h3>
+                <p className="text-3xl font-bold">₹{Math.round(services.reduce((acc, s) => acc + getVisitingCharge(s), 0) / (services.length || 1))}</p>
               </div>
             </div>
 
@@ -712,7 +713,7 @@ const MainAdminPanel = () => {
                 <h2 className="text-xl font-bold">All Services</h2>
               </div>
               <DataTable
-                headers={["Service Name", "Category", "Price", "Provider"]}
+                headers={["Service Name", "Category", "Min Visiting Charge", "Provider"]}
                 data={services}
                 renderRow={(s, i) => (
                   <tr key={i} className="hover:bg-[#1a1a1a] transition-colors border-b border-[#222] last:border-0">
@@ -722,7 +723,7 @@ const MainAdminPanel = () => {
                         {s.category}
                       </span>
                     </td>
-                    <td className="p-4 font-bold text-white">₹{s.price}</td>
+                    <td className="p-4 font-bold text-white">₹{getVisitingCharge(s)}</td>
                     <td className="p-4 text-gray-400 text-sm">{s.providerEmail}</td>
                   </tr>
                 )}

@@ -21,6 +21,7 @@ import Card from "../components/ui/Card";
 import MagneticButton from "../components/ui/MagneticButton";
 import PaymentModal from "../components/ui/PaymentModal";
 import { toast } from "react-hot-toast";
+import { getVisitingCharge } from "../utils/pricing";
 
 const RequestPortal = () => {
   const { id } = useParams();
@@ -52,12 +53,19 @@ const RequestPortal = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           setRequestData(data);
+          const requestCharge = getVisitingCharge(data);
+          if (requestCharge > 0) {
+            setServicePrice(requestCharge);
+          }
 
-          // Fetch service price if not in request
+          // Fallback: fetch charge from service if not stored in request
           if (data.serviceId) {
             const serviceSnap = await getDoc(doc(db, "provider_services", data.serviceId));
             if (serviceSnap.exists()) {
-              setServicePrice(serviceSnap.data().price);
+              const serviceCharge = getVisitingCharge(serviceSnap.data());
+              if (serviceCharge > 0) {
+                setServicePrice(serviceCharge);
+              }
             }
           }
         } else {
@@ -114,7 +122,7 @@ const RequestPortal = () => {
       await addDoc(collection(db, "notifications"), {
         toUid: requestData.providerUid,
         title: "Payment Received",
-        message: `Payment of ₹${parseInt(servicePrice) + 50} received for ${requestData.serviceName}.`,
+        message: `Payment of ₹${Number(servicePrice) + 50} received for ${requestData.serviceName}.`,
         timestamp: serverTimestamp(),
         read: false,
         link: `/request/${id}`
@@ -300,7 +308,7 @@ const RequestPortal = () => {
             <Card className="p-6">
               <h3 className="font-bold mb-4">Payment Summary</h3>
               <div className="flex justify-between mb-2 text-sm">
-                <span className="text-muted-foreground">Service Cost</span>
+                <span className="text-muted-foreground">Minimum Visiting Charge</span>
                 <span className="font-medium">₹{servicePrice}</span>
               </div>
               <div className="flex justify-between mb-4 text-sm">
@@ -310,7 +318,7 @@ const RequestPortal = () => {
               <div className="h-px bg-border mb-4" />
               <div className="flex justify-between font-bold text-lg mb-6">
                 <span>Total</span>
-                <span>₹{parseInt(servicePrice) + 50}</span>
+                <span>₹{Number(servicePrice) + 50}</span>
               </div>
 
               {isUser && requestData.status === "Completed" && requestData.paymentStatus !== "Paid" ? (

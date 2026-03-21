@@ -51,6 +51,7 @@ const DealPortalPage = () => {
     address,
     price,
   } = request;
+  const visitingCharge = request?.visitingCharge ?? request?.minimumVisitCharge ?? price ?? 0;
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
@@ -77,7 +78,7 @@ const DealPortalPage = () => {
           <h3 className="text-lg font-semibold text-teal-300 mb-2">Service Information</h3>
           <p><span className="text-gray-400">Service:</span> {serviceName}</p>
           <p><span className="text-gray-400">Description:</span> {serviceDescription}</p>
-          <p><span className="text-gray-400">Price:</span> ₹{price}</p>
+          <p><span className="text-gray-400">Minimum Visiting Charge:</span> ₹{visitingCharge}</p>
           <p><span className="text-gray-400">Scheduled Date:</span> {scheduledDate || "TBD"}</p>
           <p><span className="text-gray-400">Address:</span> {address}</p>
         </div>

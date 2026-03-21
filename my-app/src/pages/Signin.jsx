@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { auth, db, provider } from "../firebase";
+import React, { useEffect, useState } from "react";
+import { auth, db, provider, authPersistenceReady } from "../firebase";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithPhoneNumber,
   RecaptchaVerifier,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
@@ -29,7 +30,7 @@ function Signin() {
 
   const navigate = useNavigate();
 
-  const redirectToDashboard = async (uid) => {
+  const redirectToDashboard = async (uid, { showWelcomeToast = true } = {}) => {
     const userRef = doc(db, "users", uid);
     const userSnap = await getDoc(userRef);
     if (userSnap.exists()) {
@@ -39,17 +40,30 @@ function Signin() {
       } else {
         navigate("/user-dashboard");
       }
-      toast.success("Welcome back!");
+      if (showWelcomeToast) {
+        toast.success("Welcome back!");
+      }
     } else {
       toast.error("User role not found.");
     }
   };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await redirectToDashboard(user.uid, { showWelcomeToast: false });
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleEmailSignin = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       const result = await signInWithEmailAndPassword(auth, email, password);
       await redirectToDashboard(result.user.uid);
     } catch (error) {
@@ -63,6 +77,7 @@ function Signin() {
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       const result = await signInWithPopup(auth, provider);
       await redirectToDashboard(result.user.uid);
     } catch (error) {
@@ -86,6 +101,7 @@ function Signin() {
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, phone, appVerifier);

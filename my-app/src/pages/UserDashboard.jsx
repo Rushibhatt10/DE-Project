@@ -17,6 +17,7 @@ import {
 import Card from "../components/ui/Card";
 import MagneticButton from "../components/ui/MagneticButton";
 import HeroCarousel from "../components/dashboard/HeroCarousel";
+import { getVisitingCharge } from "../utils/pricing";
 
 const UserDashboard = () => {
   const [services, setServices] = useState([]);
@@ -94,9 +95,9 @@ const UserDashboard = () => {
     })
     .sort((a, b) => {
       if (sortOption === "price_low")
-        return parseFloat(a.price || 0) - parseFloat(b.price || 0);
+        return getVisitingCharge(a) - getVisitingCharge(b);
       if (sortOption === "price_high")
-        return parseFloat(b.price || 0) - parseFloat(a.price || 0);
+        return getVisitingCharge(b) - getVisitingCharge(a);
       if (sortOption === "rating_high")
         return (b.rating || 0) - (a.rating || 0);
       if (sortOption === "newest")
@@ -235,8 +236,8 @@ const UserDashboard = () => {
                 className="bg-transparent border-none outline-none text-foreground font-medium cursor-pointer"
               >
                 <option value="newest">Newest</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
+                <option value="price_low">Visiting Charge: Low to High</option>
+                <option value="price_high">Visiting Charge: High to Low</option>
                 <option value="rating_high">Top Rated</option>
               </select>
             </div>
@@ -297,7 +298,7 @@ const UserDashboard = () => {
                               {service.name}
                             </h3>
                             <div className="text-lg font-bold text-primary whitespace-nowrap">
-                              ₹{service.price}
+                              ₹{getVisitingCharge(service)}
                             </div>
                           </div>
 

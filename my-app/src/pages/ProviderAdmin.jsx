@@ -39,6 +39,7 @@ import {
 import Card from "../components/ui/Card";
 import MagneticButton from "../components/ui/MagneticButton";
 import { toast } from "react-hot-toast";
+import { getVisitingCharge } from "../utils/pricing";
 
 // Fix for Leaflet marker icons
 import L from "leaflet";
@@ -182,7 +183,7 @@ const ProviderAdmin = () => {
           { label: "Total Services", value: services.length, icon: <PackageCheck className="w-5 h-5 text-cyan-500" /> },
           { label: "Pending Requests", value: requests.filter(r => r.status === "Pending").length, icon: <Clock className="w-5 h-5 text-purple-500" /> },
           { label: "Completed Jobs", value: requests.filter(r => r.status === "Completed").length, icon: <CheckCircle className="w-5 h-5 text-green-500" /> },
-          { label: "Total Earnings", value: `₹${requests.filter(r => r.status === "Completed").reduce((acc, curr) => acc + (parseInt(curr.price) || 0), 0)}`, icon: <User className="w-5 h-5 text-blue-500" /> },
+          { label: "Total Earnings", value: `₹${requests.filter(r => r.status === "Completed").reduce((acc, curr) => acc + getVisitingCharge(curr), 0)}`, icon: <User className="w-5 h-5 text-blue-500" /> },
           { label: "Average Rating", value: averageRating, icon: <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" /> },
         ].map((stat, i) => (
           <Card key={i} className="p-6 flex items-center justify-between border-border/50 bg-card/50 hover:border-cyan-500/30 transition-colors">
@@ -339,7 +340,7 @@ const ProviderAdmin = () => {
                 )}
                 <div className="flex-1">
                   <h3 className="font-bold text-lg">{service.name}</h3>
-                  <p className="text-primary font-bold">₹{service.price}</p>
+                  <p className="text-primary font-bold">₹{getVisitingCharge(service)} minimum visit</p>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{service.description}</p>
                 </div>
               </div>

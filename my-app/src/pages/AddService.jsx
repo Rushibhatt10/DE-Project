@@ -22,7 +22,7 @@ import Card from "../components/ui/Card";
 import MagneticButton from "../components/ui/MagneticButton";
 import { toast } from "react-hot-toast";
 
-// Standard Market Rates Data
+// Suggested minimum visiting charges by service type
 const STANDARD_RATES = {
   "Cleaning": {
     "Full Home Deep Cleaning": 1499,
@@ -215,6 +215,10 @@ const AddService = () => {
     e.preventDefault();
     if (imageFiles.length === 0) return toast.error("Please upload at least one image");
     if (!formData.category || !formData.name || !formData.price) return toast.error("Please fill all required fields");
+    const visitingCharge = Number(formData.price);
+    if (!Number.isFinite(visitingCharge) || visitingCharge <= 0) {
+      return toast.error("Please enter a valid minimum visiting charge");
+    }
 
     setUploading(true);
     try {
@@ -242,7 +246,10 @@ const AddService = () => {
       // Save to Firestore
       await addDoc(collection(db, "provider_services"), {
         ...formData,
-        price: parseInt(formData.price),
+        // Keep both fields for backward compatibility with older screens.
+        price: visitingCharge,
+        visitingCharge,
+        minimumVisitCharge: visitingCharge,
         imageUrls,
         providerEmail: provider.email,
         providerUid: provider.uid,
@@ -276,7 +283,7 @@ const AddService = () => {
           </button>
           <div>
             <h1 className="text-3xl font-bold">Add New Service</h1>
-            <p className="text-muted-foreground">List your expertise and start earning</p>
+            <p className="text-muted-foreground">List your expertise and set your minimum home visit charge</p>
           </div>
         </div>
 
@@ -340,14 +347,14 @@ const AddService = () => {
               )}
             </Card>
 
-            {/* Pricing Section */}
+            {/* Minimum Visiting Charge Section */}
             <Card className="p-6 space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-bold flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-primary" /> Pricing
+                  <DollarSign className="w-5 h-5 text-primary" /> Minimum Visiting Charge
                 </h2>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className={formData.useStandardPrice ? "text-primary font-bold" : "text-muted-foreground"}>Standard Rate</span>
+                  <span className={formData.useStandardPrice ? "text-primary font-bold" : "text-muted-foreground"}>Suggested</span>
                   <button
                     type="button"
                     onClick={togglePriceMode}
@@ -355,7 +362,7 @@ const AddService = () => {
                   >
                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${formData.useStandardPrice ? "translate-x-6" : "translate-x-0"}`} />
                   </button>
-                  <span className={!formData.useStandardPrice ? "text-primary font-bold" : "text-muted-foreground"}>Custom Rate</span>
+                  <span className={!formData.useStandardPrice ? "text-primary font-bold" : "text-muted-foreground"}>Custom</span>
                 </div>
               </div>
 
@@ -363,6 +370,7 @@ const AddService = () => {
                 <span className="absolute left-4 top-3.5 text-muted-foreground">₹</span>
                 <input
                   type="number"
+                  min="1"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   readOnly={formData.useStandardPrice}
@@ -376,7 +384,7 @@ const AddService = () => {
 
               {formData.useStandardPrice && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Info className="w-3 h-3" /> Based on current market rates for this service.
+                  <Info className="w-3 h-3" /> Suggested as a minimum visit fee. Final service cost can be discussed after inspection.
                 </p>
               )}
             </Card>

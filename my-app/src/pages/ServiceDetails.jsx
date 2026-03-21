@@ -29,6 +29,8 @@ import {
 import BookingWizard from "../components/booking/BookingWizard";
 import Card from "../components/ui/Card";
 import MagneticButton from "../components/ui/MagneticButton";
+import { getVisitingCharge } from "../utils/pricing";
+import { toast } from "react-hot-toast";
 
 const ServiceDetails = () => {
   const { id } = useParams();
@@ -104,7 +106,7 @@ const ServiceDetails = () => {
         date: new Date(bookingDetails.date).toLocaleDateString(),
         time: bookingDetails.timeSlot,
         address: bookingDetails.address,
-        description: bookingDetails.description
+        description: bookingDetails.description || "N/A"
       };
 
       // Note: Replace with actual EmailJS service/template IDs
@@ -127,29 +129,58 @@ const ServiceDetails = () => {
   };
 
   const handleConfirmBooking = async (bookingDetails) => {
-    if (!userEmail || !service) return;
+    if (!userEmail || !userId || !service) {
+      toast.error("Please sign in again and try booking.");
+      return;
+    }
+    const visitingCharge = getVisitingCharge(service);
+    const normalizedCoordinates = bookingDetails?.coordinates
+      ? {
+        lat: Number(bookingDetails.coordinates.lat),
+        lng: Number(bookingDetails.coordinates.lng),
+      }
+      : null;
+    const sanitizedBookingDetails = {
+      address: bookingDetails?.address || "",
+      coordinates: normalizedCoordinates,
+      date: bookingDetails?.date || null,
+      timeSlot: bookingDetails?.timeSlot || null,
+    };
 
-    try {
-      const requestRef = await addDoc(collection(db, "user_requests"), {
+    const requestPayload = {
         serviceId: service.id,
         serviceName: service.name,
         providerUid: service.providerUid || "",
         providerEmail: service.providerEmail,
+        providerName: service.providerName || "",
+        price: visitingCharge,
+        visitingCharge,
+        minimumVisitCharge: visitingCharge,
         userId: userId,
         userEmail: userEmail,
         status: "Pending",
         timestamp: serverTimestamp(),
-        ...bookingDetails // Add description, address, date, timeSlot, coordinates
-      });
+        ...sanitizedBookingDetails,
+      };
 
-      await sendEmails(bookingDetails);
+    try {
+      let requestRef;
+      try {
+        requestRef = await addDoc(collection(db, "user_requests"), requestPayload);
+      } catch (firstAttemptError) {
+        // One silent retry helps when network has a brief hiccup.
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        requestRef = await addDoc(collection(db, "user_requests"), requestPayload);
+      }
+
+      await sendEmails(sanitizedBookingDetails);
 
       setShowBookingWizard(false);
-      alert("Booking requested successfully!");
+      toast.success("Booking requested successfully!");
       navigate(`/order/${requestRef.id}`);
     } catch (error) {
-      console.error("Error sending request:", error);
-      alert("Failed to send request. Please try again.");
+      console.error("Error sending request:", error?.message || error);
+      toast.error("Could not send request right now. Please check internet and try again.");
     }
   };
 
@@ -160,6 +191,8 @@ const ServiceDetails = () => {
       </div>
     );
   }
+
+  const visitingCharge = getVisitingCharge(service);
 
   return (
     <div className="min-h-screen bg-background text-foreground py-8 px-4 font-sans">
@@ -203,8 +236,8 @@ const ServiceDetails = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">₹{service.price}</div>
-                  <div className="text-sm text-muted-foreground">per service</div>
+                  <div className="text-2xl font-bold text-primary">₹{visitingCharge}</div>
+                  <div className="text-sm text-muted-foreground">minimum visiting charge</div>
                 </div>
               </div>
 

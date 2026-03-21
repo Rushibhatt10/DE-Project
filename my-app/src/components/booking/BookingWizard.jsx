@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Calendar, Clock, MapPin, CheckCircle, ChevronLeft, ChevronRight, X, Navigation, Search, AlertTriangle, Loader2 } from "lucide-react";
 import Card from "../ui/Card";
 import MagneticButton from "../ui/MagneticButton";
+import { getVisitingCharge } from "../../utils/pricing";
 
 // Fix for Leaflet marker icons
 import L from "leaflet";
@@ -21,60 +22,14 @@ let DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const steps = [
-    { id: 1, title: "Requirement", icon: <CheckCircle className="w-5 h-5" /> },
-    { id: 2, title: "Location", icon: <MapPin className="w-5 h-5" /> },
-    { id: 3, title: "Slot", icon: <Calendar className="w-5 h-5" /> },
-    { id: 4, title: "Review", icon: <CheckCircle className="w-5 h-5" /> },
+    { id: 1, title: "Location", icon: <MapPin className="w-5 h-5" /> },
+    { id: 2, title: "Slot", icon: <Calendar className="w-5 h-5" /> },
+    { id: 3, title: "Review", icon: <CheckCircle className="w-5 h-5" /> },
 ];
 
 const GEOAPIFY_API_KEY = "76470fd0d5294effa24ded7a415a7fdf";
 
 // --- Extracted Step Components ---
-
-const StepRequirement = ({ bookingData, setBookingData }) => {
-    const textareaRef = useRef(null);
-    const MAX_CHARS = 500;
-
-    const handleInput = (e) => {
-        const target = e.target;
-        target.style.height = "inherit";
-        target.style.height = `${target.scrollHeight}px`;
-        setBookingData({ ...bookingData, description: target.value });
-    };
-
-    return (
-        <div className="space-y-6">
-            <div className="space-y-2">
-                <h3 className="text-2xl font-bold tracking-tight">Describe your problem</h3>
-                <p className="text-muted-foreground">
-                    Please provide details about the issue so the provider can come prepared.
-                </p>
-            </div>
-
-            <div className="relative group">
-                <textarea
-                    ref={textareaRef}
-                    className="w-full p-5 rounded-2xl bg-secondary/30 border-2 border-transparent focus:border-primary/20 focus:bg-background hover:bg-secondary/50 transition-all duration-300 outline-none min-h-[180px] resize-none text-lg leading-relaxed shadow-sm focus:shadow-xl"
-                    placeholder="e.g., My AC is making a loud noise and not cooling properly..."
-                    value={bookingData.description}
-                    onChange={handleInput}
-                    maxLength={MAX_CHARS}
-                    autoFocus
-                />
-                <div className="absolute bottom-4 right-4 text-xs font-medium text-muted-foreground bg-background/80 px-2 py-1 rounded-md backdrop-blur-sm border border-border/50">
-                    {bookingData.description.length} / {MAX_CHARS}
-                </div>
-            </div>
-
-            {bookingData.description.length === 0 && (
-                <div className="flex items-center gap-2 text-amber-600 text-sm bg-amber-500/10 p-3 rounded-lg">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span>Description is required to proceed.</span>
-                </div>
-            )}
-        </div>
-    );
-};
 
 const MapUpdater = ({ center }) => {
     const map = useMap();
@@ -110,9 +65,15 @@ const StepAddress = ({ bookingData, setBookingData, providerCoords, distance, is
         }
     };
 
+    const toPlainCoordinates = (latlng) => ({
+        lat: Number(latlng.lat),
+        lng: Number(latlng.lng),
+    });
+
     const handleLocationSelect = (latlng) => {
-        setBookingData(prev => ({ ...prev, coordinates: latlng }));
-        reverseGeocode(latlng.lat, latlng.lng);
+        const normalized = toPlainCoordinates(latlng);
+        setBookingData(prev => ({ ...prev, coordinates: normalized }));
+        reverseGeocode(normalized.lat, normalized.lng);
     };
 
     const handleSearch = async (query) => {
@@ -312,8 +273,8 @@ const StepReview = ({ service, bookingData, distance, isWithinRange }) => (
                 <span className="font-bold text-lg">{service.name}</span>
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-border/50">
-                <span className="text-muted-foreground">Price</span>
-                <span className="font-bold text-primary text-lg">₹{service.price}</span>
+                <span className="text-muted-foreground">Minimum Visiting Charge</span>
+                <span className="font-bold text-primary text-lg">₹{getVisitingCharge(service)}</span>
             </div>
             <div className="flex justify-between items-center pb-4 border-b border-border/50">
                 <span className="text-muted-foreground">Date & Time</span>
@@ -349,7 +310,6 @@ const StepReview = ({ service, bookingData, distance, isWithinRange }) => (
 const BookingWizard = ({ service, onClose, onConfirm }) => {
     const [currentStep, setCurrentStep] = useState(1);
     const [bookingData, setBookingData] = useState({
-        description: "",
         address: "",
         coordinates: null,
         date: null,
@@ -415,14 +375,13 @@ const BookingWizard = ({ service, onClose, onConfirm }) => {
     // --- Navigation Logic ---
 
     const handleNext = () => {
-        if (currentStep === 1 && !bookingData.description) return alert("Please describe the problem.");
-        if (currentStep === 2) {
+        if (currentStep === 1) {
             if (!bookingData.address || !bookingData.coordinates) return alert("Please confirm your location.");
             if (!isWithinRange) return alert("Service is out of range (must be within 5km).");
         }
-        if (currentStep === 3 && (!bookingData.date || !bookingData.timeSlot)) return alert("Please select date and time.");
+        if (currentStep === 2 && (!bookingData.date || !bookingData.timeSlot)) return alert("Please select date and time.");
 
-        if (currentStep < 4) setCurrentStep(currentStep + 1);
+        if (currentStep < 3) setCurrentStep(currentStep + 1);
         else onConfirm(bookingData);
     };
 
@@ -442,7 +401,7 @@ const BookingWizard = ({ service, onClose, onConfirm }) => {
                 <div className="p-6 border-b border-border flex justify-between items-center bg-card/50 backdrop-blur-sm">
                     <div>
                         <h2 className="font-bold text-xl">Book Service</h2>
-                        <p className="text-sm text-muted-foreground">Step {currentStep} of 4</p>
+                        <p className="text-sm text-muted-foreground">Step {currentStep} of 3</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full transition-colors text-muted-foreground hover:text-foreground">
                         <X className="w-6 h-6" />
@@ -465,7 +424,7 @@ const BookingWizard = ({ service, onClose, onConfirm }) => {
                         <motion.div
                             className="h-full bg-primary"
                             initial={{ width: "0%" }}
-                            animate={{ width: `${(currentStep / 4) * 100}%` }}
+                            animate={{ width: `${(currentStep / 3) * 100}%` }}
                             transition={{ duration: 0.3 }}
                         />
                     </div>
@@ -481,10 +440,9 @@ const BookingWizard = ({ service, onClose, onConfirm }) => {
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.2 }}
                         >
-                            {currentStep === 1 && <StepRequirement bookingData={bookingData} setBookingData={setBookingData} />}
-                            {currentStep === 2 && <StepAddress bookingData={bookingData} setBookingData={setBookingData} providerCoords={providerCoords} distance={distance} isWithinRange={isWithinRange} />}
-                            {currentStep === 3 && <StepSlot bookingData={bookingData} setBookingData={setBookingData} />}
-                            {currentStep === 4 && <StepReview service={service} bookingData={bookingData} distance={distance} isWithinRange={isWithinRange} />}
+                            {currentStep === 1 && <StepAddress bookingData={bookingData} setBookingData={setBookingData} providerCoords={providerCoords} distance={distance} isWithinRange={isWithinRange} />}
+                            {currentStep === 2 && <StepSlot bookingData={bookingData} setBookingData={setBookingData} />}
+                            {currentStep === 3 && <StepReview service={service} bookingData={bookingData} distance={distance} isWithinRange={isWithinRange} />}
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -500,11 +458,11 @@ const BookingWizard = ({ service, onClose, onConfirm }) => {
                     </button>
                     <MagneticButton
                         onClick={handleNext}
-                        disabled={currentStep === 4 && !isWithinRange}
+                        disabled={currentStep === 3 && !isWithinRange}
                         className="px-8 py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/25 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 transition-all flex items-center gap-2"
                     >
-                        {currentStep === 4 ? "Confirm Booking" : "Next"}
-                        {currentStep < 4 && <ChevronRight className="w-4 h-4" />}
+                        {currentStep === 3 ? "Confirm Booking" : "Next"}
+                        {currentStep < 3 && <ChevronRight className="w-4 h-4" />}
                     </MagneticButton>
                 </div>
             </motion.div>

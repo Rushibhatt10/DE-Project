@@ -16,11 +16,13 @@ import ProviderAdmin from "./pages/ProviderAdmin";
 import AddService from "./pages/AddService";
 import ServiceDetails from "./pages/ServiceDetails";
 import AccountSection from "./pages/AccountSection";
+import IssueDetector from "./pages/IssueDetector";
 
 // 🔐 Admin Pages
 import MainAdminPanel from "./pages/MainAdminPanel";
 
 import ResetDatabase from "./pages/ResetDatabase";
+import SeedAhmedabadProviders from "./pages/SeedAhmedabadProviders";
 
 // 🤝 Deal & Chat
 import DealPortalPage from "./pages/DealPortalPage";
@@ -45,6 +47,7 @@ function App() {
         <Route path="/add-service" element={<AddService />} />
         <Route path="/service/:id" element={<ServiceDetails />} />
         <Route path="/account" element={<AccountSection />} />
+        <Route path="/ai-diagnosis" element={<IssueDetector />} />
 
         {/* 🔐 Admin & Verification */}
         <Route path="/admin" element={<MainAdminPanel />} />
@@ -56,6 +59,7 @@ function App() {
         <Route path="/order/:orderId" element={<OrderPortal />} />
         <Route path="/invoice/:invoiceId" element={<InvoiceView />} />
         <Route path="/reset-db-secure" element={<ResetDatabase />} />
+        <Route path="/seed-providers-secure" element={<SeedAhmedabadProviders />} />
 
 
         {/* ❌ Fallback Route */}

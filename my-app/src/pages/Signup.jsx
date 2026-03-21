@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { auth, db, provider } from "../firebase";
+import React, { useEffect, useState } from "react";
+import { auth, db, provider, authPersistenceReady } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
   signInWithPhoneNumber,
   RecaptchaVerifier,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -31,11 +32,36 @@ function Signup() {
 
   const navigate = useNavigate();
 
+  const redirectToDashboard = async (uid) => {
+    const userSnap = await getDoc(doc(db, "users", uid));
+    if (!userSnap.exists()) {
+      return;
+    }
+
+    const roleFromDb = userSnap.data().role || "user";
+    if (roleFromDb === "provider") {
+      navigate("/provider-dashboard");
+      return;
+    }
+    navigate("/user-dashboard");
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await redirectToDashboard(user.uid);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const handleEmailSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await setDoc(doc(db, "users", result.user.uid), {
         name,
@@ -59,6 +85,7 @@ function Signup() {
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       const result = await signInWithPopup(auth, provider);
       await setDoc(doc(db, "users", result.user.uid), {
         name: result.user.displayName || name,
@@ -88,6 +115,7 @@ function Signup() {
     setLoading(true);
 
     try {
+      await authPersistenceReady;
       setupRecaptcha();
       const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, phone, appVerifier);

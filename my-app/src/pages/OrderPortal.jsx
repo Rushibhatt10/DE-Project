@@ -36,6 +36,7 @@ import OrderChat from "../components/chat/OrderChat";
 import { toast } from "react-hot-toast";
 import { calculateOrderEconomics, generateInvoiceNumber } from "../utils/finance";
 import { FileText } from "lucide-react";
+import { getVisitingCharge } from "../utils/pricing";
 
 const OrderPortal = () => {
     const { orderId } = useParams();
@@ -131,7 +132,7 @@ const OrderPortal = () => {
 
     const handlePaymentSuccess = async () => {
         try {
-            const financials = calculateOrderEconomics(order.price || 0);
+            const financials = calculateOrderEconomics(getVisitingCharge(order));
             const invoiceNumber = generateInvoiceNumber();
             const invoiceData = {
                 invoiceNumber,
@@ -193,6 +194,7 @@ const OrderPortal = () => {
 
     const isProvider = currentUser.uid === order.providerUid;
     const isUser = currentUser.uid === order.userId;
+    const baseCharge = getVisitingCharge(order);
 
     // Basic security check: only involved parties can view
     // (In a real app, Firestore rules would enforce this, but double check here)
@@ -411,8 +413,8 @@ const OrderPortal = () => {
                                     </div>
                                     {isProvider && (
                                         <div className="flex items-center justify-between">
-                                            <span className="text-muted-foreground">Earnings</span>
-                                            <span className="font-bold text-green-500">₹{order.price || "0"}</span>
+                                            <span className="text-muted-foreground">Visiting Charge</span>
+                                            <span className="font-bold text-green-500">₹{baseCharge}</span>
                                         </div>
                                     )}
                                 </div>
@@ -476,7 +478,7 @@ const OrderPortal = () => {
                                         <div className="flex justify-between items-center">
                                             <span className="text-muted-foreground">Total Paid</span>
                                             <span className="text-2xl font-bold">
-                                                ₹{(order.financialSnapshot?.grandTotal || (parseInt(order.price || 0) * 1.18)).toFixed(2)}
+                                                ₹{(order.financialSnapshot?.grandTotal || (baseCharge * 1.18)).toFixed(2)}
                                             </span>
                                         </div>
                                         <div className="w-full py-3 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl flex items-center justify-center gap-2 font-bold">
@@ -497,7 +499,7 @@ const OrderPortal = () => {
                                             <span className="text-muted-foreground">Estimate Total</span>
                                             {/* Show estimated total including gst */}
                                             <span className="text-2xl font-bold">
-                                                ₹{(calculateOrderEconomics(order.price || 0).grandTotal)}
+                                                ₹{calculateOrderEconomics(baseCharge).grandTotal}
                                             </span>
                                         </div>
                                         {order.status === "Completed" ? (
@@ -525,7 +527,7 @@ const OrderPortal = () => {
                 {showPayment && (
                     <PaymentModal
                         serviceName={order.serviceName}
-                        amount={order.price || "0"}
+                        amount={baseCharge}
                         onClose={() => setShowPayment(false)}
                         onSuccess={handlePaymentSuccess}
                     />

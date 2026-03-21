@@ -1,7 +1,12 @@
 // src/firebase.js
 
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  setPersistence,
+  browserLocalPersistence,
+} from "firebase/auth";
 import { getFirestore, enableNetwork } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
@@ -18,6 +23,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+const authPersistenceReady = setPersistence(auth, browserLocalPersistence).catch(
+  (error) => {
+    console.error("Failed to enable auth persistence:", error);
+  }
+);
 const provider = new GoogleAuthProvider();
 
 const db = getFirestore(app);
@@ -26,4 +36,5 @@ enableNetwork(db).catch(console.error);
 const storage = getStorage(app);
 
 export { auth, db, provider, storage };
+export { authPersistenceReady };
 export { app };

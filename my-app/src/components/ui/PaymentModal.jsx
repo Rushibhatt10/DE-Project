@@ -76,7 +76,7 @@ const PaymentModal = ({ serviceName, amount, onClose, onSuccess }) => {
                                     <span className="font-medium">{serviceName}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Taxable Value</span>
+                                    <span className="text-muted-foreground">Minimum Visiting Charge</span>
                                     <span className="font-medium">₹{taxableAmount}</span>
                                 </div>
                                 <div className="flex justify-between">
